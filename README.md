@@ -22,7 +22,7 @@ This tutorial assumes you have:
     git clone https://github.com/paleobiotechnology/nfcore-mag-adna-protocol.git
 
    ## Change into the cloned repo, and set this as root for the remainder of the tutorial
-   cd ancientdna-nfcoremag-tutorial
+   cd nfcore-mag-adna-protocol
    TUTORIAL_DIR=$(pwd)
    ```
 
@@ -56,8 +56,10 @@ This tutorial assumes you have:
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
    ```bash
-   cd ancientdna-nfcoremag-tutorial
+   cd $TUTORIAL_DIR
    ```
+
+   > You might have to redefine the `TUTORIAL_DIR` environment variable 
 
 4. Create environment (`-y` is specified to automatically accept proposed dependencies, remove if you wish to check)
 
@@ -82,7 +84,16 @@ This tutorial assumes you have:
    nextflow pull nf-core/mag -r 3.3.1
    ```
 
+7. Deactivate conda environement
+
+   ```bash
+   conda deactivate
+   ```
+
 7. Create a configuration file
+
+   Visit nf-core/launch, and select the nf-core/mag pipeline, with the version 3.3.1.
+   Alternatively, a `nf-params.json` file is already available in [`analysis/nf-params.json`](analysis/nf-params.json)
 
 ## Database Downloading
 
@@ -93,7 +104,7 @@ This tutorial assumes you have:
    ```bash
    conda create -y -n gunc -c bioconda gunc=1.0.6
    conda activate gunc
-   gunc download_db $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/gunc_db
+   gunc download_db $TUTORIAL_DIR/cache/database/gunc_db
    conda deactivate
    ```
 
@@ -102,15 +113,15 @@ This tutorial assumes you have:
    - GTDB:
 
    ```bash
-   wget -O $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r220_data.tar.gz https://data.gtdb.ecogenomic.org/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
-   tar -xzf $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r220_data.tar.gz gtdbtk_r220_data.tar.gz -C $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r220
+   wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r220_data.tar.gz https://data.gtdb.ecogenomic.org/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
+   tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r220_data.tar.gz gtdbtk_r220_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r220
    ```
 
    - CheckM:
 
    ```bash
-   wget -O $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/checkm_data_2015_01_16.tar.gz https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-   tar -xzf $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/checkm_data_2015_01_16.tar.gz -C $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/checkm_data_2015_01_16
+   wget -O $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+   tar -xzf $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz -C $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16
    ```
 
 3. Activate main Nextflow conda environment
@@ -194,7 +205,7 @@ This is the content of the `nf-params.json` file
 This `nf-params.json` is then used to specify the parameters on the command line like so:
 
 ```bash
-nextflow run nf-core/mag -r 3.3.1 -params-file nf-params.json
+nextflow run nf-core/mag -r 3.3.1 -params-file analysis/nf-params.json
 ```
 
 ## Clean up
