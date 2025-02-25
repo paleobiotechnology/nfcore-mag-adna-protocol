@@ -26,13 +26,9 @@ This tutorial assumes you have:
    TUTORIAL_DIR=$(pwd)
    ```
 
-   :::info
-
-   ### 🛈 Note
-
-   We assume you will want to remove the entire contents of this tutorial on completion.
-   If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
-   :::
+   > [!NOTE]
+   > We assume you will want to remove the entire contents of this tutorial on completion.
+   > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
 2. (if not already installed) Install conda through miniforge
 
@@ -49,9 +45,8 @@ This tutorial assumes you have:
    conda config --set auto_activate_base false
    ```
 
-   :::info
-   miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
-   :::
+   > [!NOTE]
+   > Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
 
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
@@ -59,7 +54,7 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR
    ```
 
-   > You might have to redefine the `TUTORIAL_DIR` environment variable 
+   > You might have to redefine the `TUTORIAL_DIR` environment variable
 
 4. Create environment (`-y` is specified to automatically accept proposed dependencies, remove if you wish to check)
 
@@ -90,7 +85,7 @@ This tutorial assumes you have:
    conda deactivate
    ```
 
-7. Create a configuration file
+8. Create a configuration file
 
    Visit nf-core/launch, and select the nf-core/mag pipeline, with the version 3.3.1.
    Alternatively, a `nf-params.json` file is already available in [`analysis/nf-params.json`](analysis/nf-params.json)
