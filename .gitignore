@@ -1,3 +1,8 @@
 bin/Miniforge3*
 bin/nextflow
 .nextflow
+work
+results
+null
+.nextflow.log*
+*.fastq.gz

@@ -1,0 +1,2 @@
+sample,group,short_reads_1,short_reads_2,longs_reads
+ERR3579735,ERS3774463,data/ERR3579735_1.fastq.gz,data/ERR3579735_2.fastq.gz,
