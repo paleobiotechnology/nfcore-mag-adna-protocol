@@ -26,9 +26,9 @@ This tutorial assumes you have:
    TUTORIAL_DIR=$(pwd)
    ```
 
-   > [!NOTE]
-   > We assume you will want to remove the entire contents of this tutorial on completion.
-   > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
+> [!NOTE]
+> We assume you will want to remove the entire contents of this tutorial on completion.
+> If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
 2. (if not already installed) Install conda through miniforge
 
@@ -45,8 +45,8 @@ This tutorial assumes you have:
    conda config --set auto_activate_base false
    ```
 
-   > [!NOTE]
-   > Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
+> [!NOTE]
+> Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
 
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
@@ -161,7 +161,8 @@ nextflow run nf-core/mag -r 3.3.1 \
 --gtdb_db $TUTORIAL_DIR/ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r220
 ```
 
-> [TODO check bbnorm usage]
+> [!CAUTION]
+> TODO check bbnorm usage
 
 ### The JSON way
 
