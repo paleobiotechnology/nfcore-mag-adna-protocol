@@ -23,7 +23,7 @@ This tutorial assumes you have:
 
    ## Change into the cloned repo, and set this as root for the remainder of the tutorial
    cd nfcore-mag-adna-protocol
-   TUTORIAL_DIR=$(pwd)
+   export TUTORIAL_DIR=$(pwd)
    ```
 
 > [!NOTE]
@@ -223,27 +223,39 @@ We will also run co-assembly as we have three related libraries from the same sa
 
 Finally we also run `--ancient_dna` for automatic setting of suitable short-read-to-contig mapping parameters, damage authentication with pyDamage, and damage correction with freeBayes.
 
+> [!WARNING]
+> This command or `params.yml` method of configuration assumes you are running on a server with internet access, and specifically to the public AWS iGenome bucket for downloading pre-made host genome indices
+> If you do not have internet access, you will need to download the host genome indices yourself, and specify the path to the local genome FASTA file with the `--host_fasta` parameter.
+> Furthermore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the a directory containing bowtie2 index files of the genome.
+
 ### The CLI way
 
 We can run the pipeline via a full command line execution.
 
-Note that a backslash character can be used to break up a long single command into multiple lines.
-
-> [!WARNING]
-> This command assumes you are running on a server with internet access, and specifically to the public AWS iGenome bucket for downloading pre-made host genome indices
-> If you do not have internet access, you will need to download the host genome indices yourself, and specify the path to the local genome FASTA file with the `--host_fasta` parameter.
-> Furthmore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the a directory containing bowtie2 index files of the genome.
+First make sure to create a `screen` session to allow disconnection from the server while running the pipeline, and everything you need to run the pipeline is loaded.
 
 ```bash
-
+screen -R mag_run
+export TUTORIAL_DIR=$(pwd)
 cd analysis/mag
+conda activate nextflow
+## Don't forget any other dependencies you need to run the pipeline on your specific infrastructure, such as `module load` commands!
+```
 
+Then you can run the pipeline with the following command.
+
+Note that a backslash character can be used to break up a long single command into multiple lines.
+
+> [!TIP]
+> Alternatively, replace `-profile conda` with an institutional existing profile e.g. from nf-core/configs or a custom one with -c
+
+```bash
 nextflow run nf-core/mag -r 3.4.0 \
--profile conda \ ## alternatively use an existing profile e.g. from nf-core/configs or a custom one with `-c`
+-profile conda \
 --input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
 --outdir  $TUTORIAL_DIR/analysis/mag/results \
 --reads_minlength 30 \
---host_genome GRCh37 \ ## requires internet connection
+--host_genome GRCh37 \
 --krona_db false \
 --coassemble_group \
 --skip_spades \
@@ -254,16 +266,19 @@ nextflow run nf-core/mag -r 3.4.0 \
 --min_contig_size 500  \
 --save_assembly_mapped_reads \
 --exclude_unbins_from_postbinning \
---binqc_tool CheckM \
+--binqc_tool checkm \
 --checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
 --refine_bins_dastool \
 --postbinning_input "refined_bins_only" \
 --run_gunc \
---gunc_db $TUTORIAL_DIR/cache/database/gunc_db \
+--gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
 --postbinning_input "refined_bins_only" \
---gtdb_db $TUTORIAL_DIR/cache/database/gtdbtk_r220 \
+--gtdb_db $TUTORIAL_DIR/cache/database/release220 \
 --ancient_dna
 ```
+
+> [!TIP]
+> If you get an error message of `ERROR ~ /analysis`, check that the `$TUTORIAL_DIR environment variable is set correctly.
 
 ### The JSON way
 
