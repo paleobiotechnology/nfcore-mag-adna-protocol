@@ -26,9 +26,9 @@ This tutorial assumes you have:
    TUTORIAL_DIR=$(pwd)
    ```
 
-   > [!NOTE]
-   > We assume you will want to remove the entire contents of this tutorial on completion.
-   > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
+> [!NOTE]
+> We assume you will want to remove the entire contents of this tutorial on completion.
+> If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
 2. (if not already installed) Install conda through miniforge
 
@@ -45,8 +45,8 @@ This tutorial assumes you have:
    conda config --set auto_activate_base false
    ```
 
-   > [!NOTE]
-   > Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
+> [!NOTE]
+> Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
 
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
@@ -240,8 +240,8 @@ cd analysis/mag
 
 nextflow run nf-core/mag -r 3.4.0 \
 -profile conda \ ## alternatively use an existing profile e.g. from nf-core/configs or a custom one with `-c`
---input $TUTORIAL_DIR/analysis/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
---outdir ./results \
+--input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
+--outdir  $TUTORIAL_DIR/analysis/mag/results \
 --reads_minlength 30 \
 --host_genome GRCh37 \ ## requires internet connection
 --krona_db false \
@@ -259,11 +259,14 @@ nextflow run nf-core/mag -r 3.4.0 \
 --refine_bins_dastool \
 --postbinning_input "refined_bins_only" \
 --run_gunc \
---gunc_db $TUTORIAL_DIR//cache/database/gunc_db \
+--gunc_db $TUTORIAL_DIR/cache/database/gunc_db \
 --postbinning_input "refined_bins_only" \
 --gtdb_db $TUTORIAL_DIR/cache/database/gtdbtk_r220 \
 --ancient_dna
 ```
+
+> [!CAUTION]
+> TODO check bbnorm usage
 
 ### The JSON way
 

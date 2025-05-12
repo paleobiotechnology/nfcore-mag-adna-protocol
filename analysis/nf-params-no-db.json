@@ -1,0 +1,19 @@
+{
+    "input": "AncientMetagenomeDir_nf_core_mag_input_paired_table.csv",
+    "outdir": "results",
+    "reads_minlength": 30,
+    "host_genome": "GRCh38",
+    "save_phixremoved_reads": true,
+    "bbnorm": true,
+    "skip_gtdbtk": true,
+    "skip_spades": true,
+    "skip_spadeshybrid": true,
+    "skip_quast": true,
+    "skip_prodigal": true,
+    "skip_prokka": true,
+    "skip_metaeuk": true,
+    "binning_map_mode": "own",
+    "min_contig_size": 500,
+    "skip_binqc": true,
+    "ancient_dna": true
+}
