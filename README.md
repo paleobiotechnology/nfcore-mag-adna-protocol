@@ -265,9 +265,6 @@ nextflow run nf-core/mag -r 3.4.0 \
 --ancient_dna
 ```
 
-> [!CAUTION]
-> TODO check bbnorm usage
-
 ### The JSON way
 
 However, setting up each parameter directly from the CLI can quickly become cumbersome.
