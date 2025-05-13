@@ -6,3 +6,6 @@ results
 null
 .nextflow.log*
 *.fastq.gz
+cache/database/*
+!cache/database/README.md
+
