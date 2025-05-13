@@ -6,12 +6,10 @@ This is a complementary step by step guide with explicit commands for running nf
 
 This tutorial assumes you have:
 
-<!-- TODO -->
-
-- A Unix based machine (Linux, OSX)
-- At least XYZ memory
-- At least XYZ CPUs
-- At least XYZ gb harddrive space
+- A UNIX based machine (Linux, OSX)
+- At least 720.GB memory
+- At least 64 CPUs
+- At least 175 GB of free harddrive space
 - An internet connection
 
 ## Installation and Setup
@@ -248,6 +246,7 @@ Note that a backslash character can be used to break up a long single command in
 
 > [!TIP]
 > Alternatively, replace `-profile conda` with an institutional existing profile e.g. from nf-core/configs or a custom one with -c
+> For example, in the below, we use a custom config file `custom.config` that is located in the same directory as the samplesheet to increase memory requirements for both the CHECKM_LINEAGEWF and GTDBTK_LINEAGEWF steps of the pipeline.
 
 ```bash
 nextflow run nf-core/mag -r 3.4.0 \
@@ -274,7 +273,8 @@ nextflow run nf-core/mag -r 3.4.0 \
 --gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
 --postbinning_input "refined_bins_only" \
 --gtdb_db $TUTORIAL_DIR/cache/database/release220 \
---ancient_dna
+--ancient_dna \
+-c custom.conf
 ```
 
 > [!TIP]
@@ -319,6 +319,10 @@ This `nf-params.json` is then used to specify the parameters on the command line
 ```bash
 nextflow run nf-core/mag -r 3.3.1 -params-file analysis/nf-params.json
 ```
+
+## Evaluating the results
+
+<!-- TODO -->
 
 ## Clean up
 
