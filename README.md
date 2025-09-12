@@ -103,13 +103,13 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-   > [!TIP]
-   > If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
-   > While _within_ the GUNC conda environment, run the following command:
-   >
-   > ```bash
-   > conda install -c conda-forge setuptools
-   > ```
+> [!TIP]
+> If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
+> While _within_ the GUNC conda environment, run the following command:
+>
+> ```bash
+> conda install -c conda-forge setuptools
+> ```
 
 2. Download databases for each tool into cache directory
 
@@ -122,14 +122,14 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-   > [!WARNING]
-   > This is very large >110GB and take a long time to download.
-   > We recommend re-using an already downloaded database if possible.
-   > In this case symlink the `gtdbtk_r220/` directory to the cache directory:
-   >
-   > ```bash
-   > ln -s /<your>>/<path>/<to>/gtdbtk_r220/ $TUTORIAL_DIR/cache/database/gtdbtk_r220
-   > ```
+> [!WARNING]
+> This is very large >110GB and take a long time to download.
+> We recommend re-using an already downloaded database if possible.
+> In this case symlink the `gtdbtk_r220/` directory to the cache directory:
+>
+> ```bash
+> ln -s /<your>>/<path>/<to>/gtdbtk_r220/ $TUTORIAL_DIR/cache/database/gtdbtk_r220
+> ```
 
    - CheckM:
 
