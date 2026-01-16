@@ -57,7 +57,7 @@ This tutorial assumes you have:
 4. Create environment (`-y` is specified to automatically accept proposed dependencies, remove if you wish to check)
 
    ```bash
-   conda create -y -n nextflow -c bioconda nextflow=24.10.4
+   conda create -y -n nextflow -c bioconda nextflow=25.04.2
    ```
 
 5. Load environment, and set the NXF_HOME to allow efficient cleanup at end of tutorial
@@ -74,7 +74,7 @@ This tutorial assumes you have:
 6. Download nf-core/mag
 
    ```bash
-   nextflow pull nf-core/mag -r 3.4.0
+   nextflow pull nf-core/mag -r 5.3.0
    ```
 
 7. Deactivate conda environement
@@ -249,7 +249,7 @@ Note that a backslash character can be used to break up a long single command in
 > For example, in the below, we use a custom config file `custom.config` that is located in the same directory as the samplesheet to increase memory requirements for both the CHECKM_LINEAGEWF and GTDBTK_LINEAGEWF steps of the pipeline.
 
 ```bash
-nextflow run nf-core/mag -r 3.4.0 \
+nextflow run nf-core/mag -r 5.3.0 \
 -profile conda \
 --input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
 --outdir  $TUTORIAL_DIR/analysis/mag/results \
@@ -317,7 +317,7 @@ This is the content of the `nf-params.json` file
 This `nf-params.json` is then used to specify the parameters on the command line like so:
 
 ```bash
-nextflow run nf-core/mag -r 3.3.1 -params-file analysis/nf-params.json
+nextflow run nf-core/mag -r 5.3.0 -params-file analysis/nf-params.json
 ```
 
 ## Evaluating the results
