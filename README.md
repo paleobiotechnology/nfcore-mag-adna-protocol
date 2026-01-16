@@ -83,11 +83,6 @@ This tutorial assumes you have:
    conda deactivate
    ```
 
-8. Create a configuration file
-
-   Visit nf-core/launch, and select the nf-core/mag pipeline, with the version 3.3.1.
-   Alternatively, a `nf-params.json` file is already available in [`analysis/nf-params.json`](analysis/nf-params.json)
-
 ## Database Downloading
 
 1. Make conda environment for tools that require a specific tool to download the database
