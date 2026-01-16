@@ -120,10 +120,10 @@ This tutorial assumes you have:
 > [!WARNING]
 > This is very large >110GB and take a long time to download.
 > We recommend re-using an already downloaded database if possible.
-> In this case symlink the `gtdbtk_r220/` directory to the cache directory:
+> In this case symlink the `gtdbtk_r226/` directory to the cache directory:
 >
 > ```bash
-> ln -s /<your>>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
+> ln -s /<your>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
 > ```
 
    - CheckM:
