@@ -117,8 +117,8 @@ This tutorial assumes you have:
 
    ```bash
    screen -R gdtb_download ## to allow disconnection from server while running, ust ctrl + a + d to detach, and screen -r gtdb_download to re-attach
-   wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r220_data.tar.gz https://data.gtdb.ecogenomic.org/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
-   tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r220_data.tar.gz gtdbtk_r220_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r220
+   wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz https://data.gtdb.aau.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
+   tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz gtdbtk_r226_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r226
    cd $TUTORIAL_DIR/
    ```
 
@@ -128,7 +128,7 @@ This tutorial assumes you have:
 > In this case symlink the `gtdbtk_r220/` directory to the cache directory:
 >
 > ```bash
-> ln -s /<your>>/<path>/<to>/gtdbtk_r220/ $TUTORIAL_DIR/cache/database/gtdbtk_r220
+> ln -s /<your>>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
 > ```
 
    - CheckM:
@@ -255,13 +255,11 @@ nextflow run nf-core/mag -r 5.3.0 \
 --outdir  $TUTORIAL_DIR/analysis/mag/results \
 --reads_minlength 30 \
 --host_genome GRCh37 \
---krona_db false \
---coassemble_group \
 --skip_spades \
 --skip_spadeshybrid \
 --skip_prodigal \
 --skip_metaeuk \
---binning_map_mode "group" \
+--binning_map_mode "own" \
 --min_contig_size 500  \
 --save_assembly_mapped_reads \
 --exclude_unbins_from_postbinning \
@@ -272,7 +270,7 @@ nextflow run nf-core/mag -r 5.3.0 \
 --run_gunc \
 --gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
 --postbinning_input "refined_bins_only" \
---gtdb_db $TUTORIAL_DIR/cache/database/release220 \
+--gtdb_db $TUTORIAL_DIR/cache/database/release226 \
 --ancient_dna \
 -c custom.conf
 ```
@@ -309,7 +307,7 @@ This is the content of the `nf-params.json` file
   "postbinning_input": "both",
   "run_gunc": true,
   "gunc_db": "ancientdna-nfcoremag-tutorial/cache/database/gunc_db",
-  "gtdb_db": "ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r220",
+  "gtdb_db": "ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r226",
   "ancient_dna": true
 }
 ```
