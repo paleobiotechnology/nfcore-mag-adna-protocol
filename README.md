@@ -57,13 +57,13 @@ This tutorial assumes you have:
 4. Create environment (`-y` is specified to automatically accept proposed dependencies, remove if you wish to check)
 
    ```bash
-   conda create -y -n nextflow -c bioconda nextflow=25.04.2
+   conda create -y -n ancient-nf-core-mag -c bioconda nextflow=25.04.2
    ```
 
 5. Load environment, and set the NXF_HOME to allow efficient cleanup at end of tutorial
 
    ```bash
-   conda activate nextflow
+   conda activate ancient-nf-core-mag
 
    ## Set home
    mkdir -p bin/nextflow/assets
