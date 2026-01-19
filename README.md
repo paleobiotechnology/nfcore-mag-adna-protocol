@@ -24,9 +24,9 @@ This tutorial assumes you have:
    export TUTORIAL_DIR=$(pwd)
    ```
 
-> [!NOTE]
-> We assume you will want to remove the entire contents of this tutorial on completion.
-> If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
+   > [!NOTE]
+   > We assume you will want to remove the entire contents of this tutorial on completion.
+   > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
 2. (if not already installed) Install conda through miniforge
 
@@ -43,8 +43,8 @@ This tutorial assumes you have:
    conda config --set auto_activate_base false
    ```
 
-> [!NOTE]
-> Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
+   > [!NOTE]
+   > Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
 
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
@@ -57,13 +57,13 @@ This tutorial assumes you have:
 4. Create environment (`-y` is specified to automatically accept proposed dependencies, remove if you wish to check)
 
    ```bash
-   conda create -y -n ancient-nf-core-mag -c bioconda nextflow=25.04.2
+   conda create -y -n nextflow -c bioconda nextflow=25.04.2
    ```
 
 5. Load environment, and set the NXF_HOME to allow efficient cleanup at end of tutorial
 
    ```bash
-   conda activate ancient-nf-core-mag
+   conda activate nextflow
 
    ## Set home
    mkdir -p bin/nextflow/assets
@@ -86,7 +86,6 @@ This tutorial assumes you have:
 ## Database Downloading
 
 1. Make conda environment for tools that require a specific tool to download the database
-
    - GUNC (`-y` is specified in the conda command to automatically accept proposed dependencies, remove if you wish to check)
 
    ```bash
@@ -107,7 +106,6 @@ This tutorial assumes you have:
 > ```
 
 2. Download databases for each tool into cache directory
-
    - GTDB:
 
    ```bash
@@ -117,23 +115,22 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-> [!WARNING]
-> This is very large >110GB and take a long time to download.
-> We recommend re-using an already downloaded database if possible.
-> In this case symlink the `gtdbtk_r226/` directory to the cache directory:
->
-> ```bash
-> ln -s /<your>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
-> ```
-
+   > [!WARNING]
+   > This is very large >110GB and take a long time to download.
+   > We recommend re-using an already downloaded database if possible.
+   > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
+   >
+   > ```bash
+   > ln -s /<your>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
+   > ```
    - CheckM:
 
-   ```bash
-   wget -O $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
-   mkdir $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16/
-   tar -xzf $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz -C $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16
-   cd $TUTORIAL_DIR/
-   ```
+     ```bash
+     wget -O $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz
+     mkdir $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16/
+     tar -xzf $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16.tar.gz -C $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16
+     cd $TUTORIAL_DIR/
+     ```
 
 ## Example data retrieval
 
@@ -142,40 +139,43 @@ This sample was analysed in a study to reconstruct the taxonomic profiles of anc
 
 It has three sequencing runs from two libraries: two shallow-sequenced (one non-UDG treated, one-full UDG treated to keep and full remove damage respectively), and one deep sequenced with half-UDG treated. All we sequenced paried-end on an Illumina NextSeq 500 platform.
 
-We can retrieve the raw sequencing data and prepared input sheets from via the tool `amdirt` ([Borry et al. 2024, F1000Research](https://doi.org/10.12688/f1000research.134798.2)) the European Nucleotide Archive (ENA) using the following command.
+We can retrieve the raw sequencing data and prepared input sheets from via the tool `amdirt` ([Borry et al. 2024, F1000Research](https://doi.org/10.12688/f1000research.134798.2)) from the European Nucleotide Archive (ENA).
+
+We can install `amdirt` in a separate conda environment:
+
+```bash
+   conda create -y -n amdirt -c bioconda amdirt=1.7.0
+   conda activate amdirt
+```
 
 > [!NOTE]
 > You could also use the `amdirt` graphical user interface filter for the correct rows in the table, however we assume you're running on a remote server due to the resource requirements for the pipeline.
 
-First we download the AncientMetagenomeDir host-associated libraries table.
+First we download the AncientMetagenomeDir host-associated libraries table:
 
 ```bash
 mkdir -p data/amdirt/
-amdirt download  --output $TUTORIAL_DIR/data/amdirt/ -t ancientmetagenome-hostassociated -y samples -r v25.03.0
-amdirt download  --output $TUTORIAL_DIR/data/amdirt/ -t ancientmetagenome-hostassociated -y libraries -r v25.03.0
+amdirt download  --output $TUTORIAL_DIR/data/amdirt/ -t ancientmetagenome-hostassociated -y samples -r v25.12.0
+amdirt download  --output $TUTORIAL_DIR/data/amdirt/ -t ancientmetagenome-hostassociated -y libraries -r v25.12.0
 ```
-
-> [!WARNING]
-> In `amdirt` 1.6.5, it appears the `--outdir` flag is ignored, and the output is always saved to `.`
-> Therefore you may need to run `mv ancientmetagenome-hostassociated_*_v25.03.0.tsv data/amdirt/` to move the file to the correct directory.
 
 We can then use basic `bash` tools to filter to the required sequencing runs.
 
 ```bash
 for i in samples libraries; do
-   grep -e 'project_name' -e 'ECO004.B' $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_${i}_v25.03.0.tsv > $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_${i}_v25.03.0_filtered.tsv
+   grep -e 'project_name' -e 'ECO004.B' $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_${i}_v25.12.0.tsv > $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_${i}_v25.12.0_filtered.tsv
 done
-
 ```
 
 We can then convert these samplesheets using `amdirt` to different files for preparing the input for nf-core/mag.
 
 ```bash
 ## Raw data
-amdirt convert --libraries $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_libraries_v25.03.0_filtered.tsv -o data/raw_data --curl $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_samples_v25.03.0_filtered.tsv ancientmetagenome-hostassociated
+amdirt convert --libraries $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_libraries_v25.12.0_filtered.tsv -o data/raw_data --curl $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_samples_v25.12.0_filtered.tsv ancientmetagenome-hostassociated
 
 ## Samplesheet
-amdirt convert --libraries $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_libraries_v25.03.0_filtered.tsv -o analysis/mag/ --mag --bibliography $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_samples_v25.03.0_filtered.tsv ancientmetagenome-hostassociated
+amdirt convert --libraries $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_libraries_v25.12.0_filtered.tsv -o analysis/mag/ --mag --bibliography $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_samples_v25.12.0_filtered.tsv ancientmetagenome-hostassociated
+conda deactivate
 ```
 
 We can then run the `curl` shell script to download the raw data from ENA, and update the samplesheet with the correct paths to the raw data.
@@ -196,6 +196,15 @@ sed "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDi
 ## To update the samplesheet
 sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
+
+We will also need to do a little but of repair work because `amdirt` currently supports an older version of nf-core/mag
+
+```bash
+sed -i "s/group,/group,short_reads_platform,/g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
+sed -i "s/ERS3774460,/ERS3774460,ILLUMINA,/" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
+```
+
+## Change column header from 'library_id' to 'sample_id'
 
 ## Pipeline setup and run
 
@@ -231,7 +240,6 @@ First make sure to create a `screen` session to allow disconnection from the ser
 screen -R mag_run
 export TUTORIAL_DIR=$(pwd)
 cd analysis/mag
-conda activate nextflow
 ## Don't forget any other dependencies you need to run the pipeline on your specific infrastructure, such as `module load` commands!
 ```
 
@@ -245,10 +253,11 @@ Note that a backslash character can be used to break up a long single command in
 
 ```bash
 nextflow run nf-core/mag -r 5.3.0 \
--profile conda \
+-profile eva_grace,conda \
 --input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
 --outdir  $TUTORIAL_DIR/analysis/mag/results \
 --reads_minlength 30 \
+--igenomes_base 's3://ngi-igenomes/igenomes/' \
 --host_genome GRCh37 \
 --skip_spades \
 --skip_spadeshybrid \
@@ -258,7 +267,8 @@ nextflow run nf-core/mag -r 5.3.0 \
 --min_contig_size 500  \
 --save_assembly_mapped_reads \
 --exclude_unbins_from_postbinning \
---binqc_tool checkm \
+--run_checkm \
+--run_busco false \
 --checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
 --refine_bins_dastool \
 --postbinning_input "refined_bins_only" \
