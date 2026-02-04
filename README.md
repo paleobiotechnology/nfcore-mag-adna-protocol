@@ -7,7 +7,7 @@ This is a complementary step by step guide with explicit commands for running nf
 This tutorial assumes you have:
 
 - A UNIX based machine (Linux, OSX)
-- At least 720.GB memory
+- At least XXX.GB memory <!-- TODO: Update with amount required -->
 - At least 64 CPUs
 - At least 175 GB of free harddrive space
 - An internet connection
@@ -322,6 +322,15 @@ This `nf-params.json` is then used to specify the parameters on the command line
 ```bash
 nextflow run nf-core/mag -r 5.3.0 -params-file analysis/nf-params.json
 ```
+
+For us on a SLURM HPC cluster, the run took:
+
+```log
+Duration    : 9h 34m 55s
+CPU hours   : 194.0 (3.2% failed)
+```
+
+ <!-- TODO: Update with amount used -->
 
 ## Evaluating the results
 
