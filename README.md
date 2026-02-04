@@ -7,7 +7,7 @@ This is a complementary step by step guide with explicit commands for running nf
 This tutorial assumes you have:
 
 - A UNIX based machine (Linux, OSX)
-- At least XXX.GB memory <!-- TODO: Update with amount required -->
+- At least 768.GB memory
 - At least 64 CPUs
 - At least 175 GB of free harddrive space
 - An internet connection
@@ -74,7 +74,7 @@ This tutorial assumes you have:
 6. Download nf-core/mag
 
    ```bash
-   nextflow pull nf-core/mag -r 5.3.0
+   nextflow pull nf-core/mag -r 5.4.0
    ```
 
 7. Deactivate conda environement
@@ -97,32 +97,33 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-> [!TIP]
-> If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
-> While _within_ the GUNC conda environment, run the following command:
->
-> ```bash
-> conda install -c conda-forge setuptools
-> ```
+   > [!TIP]
+   > If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
+   > While _within_ the GUNC conda environment, run the following command:
+   >
+   > ```bash
+   > conda install -c conda-forge setuptools
+   > ```
 
 2. Download databases for each tool into cache directory
    - GTDB:
 
-   ```bash
-   screen -R gdtb_download ## to allow disconnection from server while running, ust ctrl + a + d to detach, and screen -r gtdb_download to re-attach
-   wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz https://data.gtdb.aau.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
-   tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz gtdbtk_r226_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r226
-   cd $TUTORIAL_DIR/
-   ```
+     ```bash
+     screen -R gdtb_download ## to allow disconnection from server while running, ust ctrl + a + d to detach, and screen -r gtdb_download to re-attach
+     wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz https://data.gtdb.aau.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
+     tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz gtdbtk_r226_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r226
+     cd $TUTORIAL_DIR/
+     ```
 
-   > [!WARNING]
-   > This is very large >110GB and take a long time to download.
-   > We recommend re-using an already downloaded database if possible.
-   > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
-   >
-   > ```bash
-   > ln -s /<your>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
-   > ```
+     > [!WARNING]
+     > This is very large >110GB and take a long time to download.
+     > We recommend re-using an already downloaded database if possible.
+     > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
+     >
+     > ```bash
+     > ln -s /<your>/<path>/<to>/gtdbtk_r226/ $TUTORIAL_DIR/cache/database/gtdbtk_r226
+     > ```
+
    - CheckM:
 
      ```bash
@@ -137,7 +138,17 @@ This tutorial assumes you have:
 For the purposes of this tutorial, we will use an Iberian ancient human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
 This sample was analysed in a study to reconstruct the taxonomic profiles of ancient oral microbiomes from in ancient hominins.
 
-It has three sequencing runs from two libraries: two shallow-sequenced (one non-UDG treated, one-full UDG treated to keep and full remove damage respectively), and one deep sequenced with half-UDG treated. All we sequenced paried-end on an Illumina NextSeq 500 platform.
+From this sample three libraries have been generated and sequenced across three sequencing runs.
+All three were built into a double stranded library with the PfuTurbo Cx Hotstart DNA polymerase that is tolerant of ancient DNA damage and sequenced on the Illumina NextSeq 500 platform.
+
+| sample_name | library_name       | archive | archive_project | archive_sample_accession | archive_data_accession | strand_type | library_polymerase       | library_treatment | instrument_model | library_layout | read_count |
+| ----------- | ------------------ | ------- | --------------- | ------------------------ | ---------------------- | ----------- | ------------------------ | ----------------- | ---------------- | -------------- | ---------- |
+| ECO004.B    | ECO004.B0101       | ENA     | PRJEB34569      | ERS3774460               | ERR3579731             | double      | PfuTurbo Cx Hotstart DNA | none              | NextSeq 500      | PAIRED         | 13,625,140 |
+| ECO004.B    | ECO004.B0103.SG1.1 | ENA     | PRJEB34569      | ERS3774460               | ERR3579732             | double      | PfuTurbo Cx Hotstart DNA | full-udg          | NextSeq 500      | PAIRED         | 67,123,133 |
+| ECO004.B    | ECO004.B0102       | ENA     | PRJEB55583      | ERS3774460               | ERR10114849            | double      | PfuTurbo Cx Hotstart DNA | half-udg          | NextSeq 500      | PAIRED         | 21,007,806 |
+
+The primary difference between the three libraries is each have different 'UDG' treatment applied, that removes increasingly more damage from the DNA molecules, and the sequencing depth.
+The two shallow-sequenced libraries had no or only partial damage removal, whereas the deeper sequenced library had full-UDG treatment and thus has had all damage removed.
 
 We can retrieve the raw sequencing data and prepared input sheets from via the tool `amdirt` ([Borry et al. 2024, F1000Research](https://doi.org/10.12688/f1000research.134798.2)) from the European Nucleotide Archive (ENA).
 
@@ -204,8 +215,6 @@ sed -i "s/group,/group,short_reads_platform,/g" analysis/mag/AncientMetagenomeDi
 sed -i "s/ERS3774460,/ERS3774460,ILLUMINA,/" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
 
-## Change column header from 'library_id' to 'sample_id'
-
 ## Pipeline setup and run
 
 There are multiple different ways to specify nf-core/mag parameters, we'll highlight the two main ones.
@@ -252,10 +261,11 @@ Note that a backslash character can be used to break up a long single command in
 > For example, in the below, we use a custom config file `custom.config` that is located in the same directory as the samplesheet to increase memory requirements for both the CHECKM_LINEAGEWF and GTDBTK_LINEAGEWF steps of the pipeline.
 
 ```bash
-nextflow run nf-core/mag -r 5.3.0 \
--profile eva_grace,conda \
+nextflow run nf-core/mag \
+-r 5.4.0 \
+-profile conda \
 --input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
---outdir  $TUTORIAL_DIR/analysis/mag/results \
+--outdir $TUTORIAL_DIR/analysis/mag/results \
 --reads_minlength 30 \
 --igenomes_base 's3://ngi-igenomes/igenomes/' \
 --host_genome GRCh37 \
@@ -263,21 +273,21 @@ nextflow run nf-core/mag -r 5.3.0 \
 --skip_spadeshybrid \
 --skip_prodigal \
 --skip_metaeuk \
---binning_map_mode "own" \
---min_contig_size 500  \
+--binning_map_mode own \
+--min_contig_size 500 \
 --save_assembly_mapped_reads \
 --exclude_unbins_from_postbinning \
 --run_checkm \
 --run_busco false \
 --checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
 --refine_bins_dastool \
---postbinning_input "refined_bins_only" \
+--postbinning_input refined_bins_only \
 --run_gunc \
 --gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
---postbinning_input "refined_bins_only" \
+--postbinning_input refined_bins_only \
 --gtdb_db $TUTORIAL_DIR/cache/database/release226 \
 --ancient_dna \
--c custom.conf
+--refine_bins_dastool_threshold 0.3
 ```
 
 > [!TIP]
@@ -320,7 +330,7 @@ This is the content of the `nf-params.json` file
 This `nf-params.json` is then used to specify the parameters on the command line like so:
 
 ```bash
-nextflow run nf-core/mag -r 5.3.0 -params-file analysis/nf-params.json
+nextflow run nf-core/mag -r 5.4.0 -params-file analysis/nf-params.json
 ```
 
 For us on a SLURM HPC cluster, the run took:
@@ -334,7 +344,43 @@ CPU hours   : 194.0 (3.2% failed)
 
 ## Evaluating the results
 
-<!-- TODO -->
+Against summary of recommendations
+
+1. Did we have appropriate data production --> see input data
+   - We can see the difference in the the retrieved bin likely derived from the same species
+   - MEGAHIT-SemiBin2Refined-ERR10114849.1.fa; MEGAHIT-SemiBin2Refined-ERR3579731.1.fa; MEGAHIT-SemiBin2Refined-ERR3579732.110.fa
+   - all hit against 'Clostridiales' with BUSCO and GTDBTL reports the latter two to be `d__Bacteria;p__Bacillota;c__Clostridia;o__Peptostreptococcales;f__Anaerovoracaceae;g__RGIG7111;s__RGIG7111 sp036839975`
+2. Sequence to a sufficient depth -> see data input
+   - Confidence increases with more depth (in the full UDG One) for the `s__RGIG7111 sp036839975`
+3. State of the data -> see MultiQC
+   1.
+4. Remove host sequences -> see MultiQC
+5. Select appropriate tools and databases -> done by MAG
+6. Co-assemble related samples -> did not do in this case to demonstrate difference
+7. Use aDNA tools and parameters -> done by MAG (`--ancient_dna`)
+8. Discard ultra-short contigs -> done by MAG (`--min_contig_size`)
+9. Evaluate the prescne of chimeric MAGs -> ???
+10. Check ratio of short to long contigs -> need to do manually
+11. Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
+12. Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
+13. Correct for aDNA damage -> done by MAG automatically
+
+For pyDamage evaluation:
+
+Alex Hübner The two important values that I look at generally are the predicted_accuracy and the qvalue.
+The predicted_accuracy summarises how much data were available to compare them to the model predictions and usually correlates with the number of aligned reads. The rough guide is that you should have at least 50% predicted accuracy but Maxime wrote that there is a function that can evaluate the best cut off for the particular experiment. However, I have never used it. Second, I check the qvalue and simply ask whether it is < 0.05 or < 0.01 depending how accurate I would like to be.
+The other summary statistics, such as null_model_p* or damage_model_p* , summarise the fit of each of the two models to the data. So a researcher could make use of these if they want to be very sure about their results. The column RSME summarises this to as it states how far the distance between the points and the curves inferred by the models are.
+But to be far, I would use the latter only on edge cases when I am super interested in an individual contig and the predicted_accuracy and qvalue are not super indicative, whether there is ancient DNA damage. And this happens usually never.
+[2:09 PM]James Fellows Yates Hahaha ok ok. This then tracks with what I thought I think.
+
+So would you say we could maybe advise in the paper then for general rule of thumb 'evaluation':
+
+You can be reasonable comfortable reporting an ancient bin if:
+
+predicted_accuracy >= 0.5 (or 50%)q_value <= 0.05 (or whatever you feel is a suitable statistical significance threshold)(If you want 'classical' damage smiley plot information) Decreasing values from CtoT-0 to CtoT-12 columns according to the damage treatment type (if any)[2:09 PM]Would that be reasonable?
+[2:11 PM]Alex Hübner Yes, it is. I would maybe add that you should take contigs with < 1,000 aligned reads with caution because of the stochasticity of the data. That's it.
+[2:18 PM]James Fellows Yates OK awesome (even if our test data violates the last one, we aren't toooo bad when looking at the quality of the data)
+[2:18 PM]Thank you! I'll add that to the text and to the tutorial
 
 ## Clean up
 
