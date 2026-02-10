@@ -9,8 +9,12 @@ This tutorial assumes you have:
 - A UNIX based machine (Linux, OSX)
 - At least 768.GB memory
 - At least 64 CPUs
-- At least 175 GB of free harddrive space
+- At least 300 GB of free harddrive space
 - An internet connection
+
+> [!NOTE]
+> If you do not have sufficient resources, you can still follow the tutorial.
+> Skipping to [Evaluating the results](#evaluating-the-results), where the necessary results files are available premade for you.
 
 ## Installation and Setup
 
@@ -28,7 +32,7 @@ This tutorial assumes you have:
    > We assume you will want to remove the entire contents of this tutorial on completion.
    > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
-2. (if not already installed) Install conda through miniforge
+2. (⚠️ if not already installed) Install conda through miniforge
 
    ```bash
    ## Download the installation script
@@ -109,7 +113,7 @@ This tutorial assumes you have:
    - GTDB:
 
      ```bash
-     screen -R gdtb_download ## to allow disconnection from server while running, ust ctrl + a + d to detach, and screen -r gtdb_download to re-attach
+     screen -R gdtb_download ## to allow disconnection from server while running, use ctrl + a + d to detach, and `screen -r gtdb_download` to re-attach
      wget -O $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz https://data.gtdb.aau.ecogenomic.org/releases/release226/226.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r226_data.tar.gz
      tar -xzf $TUTORIAL_DIR/cache/database/gtdbtk_r226_data.tar.gz gtdbtk_r226_data.tar.gz -C $TUTORIAL_DIR/cache/database/gtdbtk_r226
      cd $TUTORIAL_DIR/
@@ -155,7 +159,7 @@ We can retrieve the raw sequencing data and prepared input sheets from via the t
 We can install `amdirt` in a separate conda environment:
 
 ```bash
-   conda create -y -n amdirt -c bioconda amdirt=1.7.0
+   conda create -y -n amdirt -c bioconda amdirt=1.7.1
    conda activate amdirt
 ```
 
@@ -281,13 +285,13 @@ nextflow run nf-core/mag \
 --run_busco false \
 --checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
 --refine_bins_dastool \
+--refine_bins_dastool_threshold 0.3
 --postbinning_input refined_bins_only \
 --run_gunc \
 --gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
---postbinning_input refined_bins_only \
 --gtdb_db $TUTORIAL_DIR/cache/database/release226 \
 --ancient_dna \
---refine_bins_dastool_threshold 0.3
+-c $TUTORIAL_DIR/analysis/mag/custom.conf
 ```
 
 > [!TIP]
@@ -296,33 +300,33 @@ nextflow run nf-core/mag \
 ### The JSON way
 
 However, setting up each parameter directly from the CLI can quickly become cumbersome.
-To remedy this, another way to specify parameters is to use a parameters JSON file, here saved as `nf-params.json`.
-This JSON file can either be prepared manually in a text editor, or with the help of the online interactivate nf-core/launch tool ([https://nf-co.re/launch/](https://nf-co.re/launch/)). One parameters have been specified, nf-core tools provides a `nf-params.json` to download.
-![nf-core-launch](https://hackmd.io/_uploads/H1PFLMsqkx.png)
+
+Alternatively, another way to specify parameters is to use a parameters JSON file, here saved as `nf-params.json`.
+This JSON file can either be prepared manually in a text editor, or with the help of the online interactivate nf-core/launch tool ([https://nf-co.re/launch/](https://nf-co.re/launch/)).
+One parameters have been specified, nf-core tools provides a `nf-params.json` to download.
+
+![Screenshot of the nf-core-launch page for nf-core/mag 5.4.0, with a few input parameters shown (free text and radio button option ones)](assets/tutorial-figure-launchpage.png)
 
 This is the content of the `nf-params.json` file
 
-<!-- TO BE SYNCED WITH COMMAND ABOVE -->
-
 ```json
 {
-  "input": "samplesheet.csv",
-  "outdir": "results",
   "reads_minlength": 30,
   "host_genome": "GRCh37",
   "skip_spades": true,
   "skip_spadeshybrid": true,
+  "skip_prodigal": true,
   "skip_metaeuk": true,
   "binning_map_mode": "own",
   "min_contig_size": 500,
   "save_assembly_mapped_reads": true,
-  "binqc_tool": "checkm",
-  "checkm_db": "ancientdna-nfcoremag-tutorial/bin ancientdna-nfcoremag-tutorial/cache/database/db/checkm_db",
+  "exclude_unbins_from_postbinning": true,
+  "run_checkm": true,
+  "run_busco": false,
   "refine_bins_dastool": true,
-  "postbinning_input": "both",
+  "refine_bins_dastool_threshold": 0.3,
+  "postbinning_input": "refined_bins_only",
   "run_gunc": true,
-  "gunc_db": "ancientdna-nfcoremag-tutorial/cache/database/gunc_db",
-  "gtdb_db": "ancientdna-nfcoremag-tutorial/cache/database/gtdbtk_r226",
   "ancient_dna": true
 }
 ```
@@ -330,40 +334,121 @@ This is the content of the `nf-params.json` file
 This `nf-params.json` is then used to specify the parameters on the command line like so:
 
 ```bash
-nextflow run nf-core/mag -r 5.4.0 -params-file analysis/nf-params.json
+nextflow run nf-core/mag \
+-r 5.4.0 \
+-profile conda \
+--input $TUTORIAL_DIR/analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv \
+--outdir $TUTORIAL_DIR/analysis/mag/results_params \
+--igenomes_base 's3://ngi-igenomes/igenomes/' \
+--checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
+--gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
+--gtdb_db $TUTORIAL_DIR/cache/database/release226 \
+-c $TUTORIAL_DIR/analysis/mag/custom.conf \
+-params-file $TUTORIAL_DIR/analysis/mag/nf-params.json
 ```
 
-For us on a SLURM HPC cluster, the run took:
+> [!TIP]
+> Using a `params.json` also helps promotes reproducible science, allowing yourself but also other researchers to reproduce your results without risk of typo-derived errors!
+>
+> We recommend using the JSON method for supplying parameters, and include this file as supplementary data in your publications (make sure not to include file paths, however - these should stay on the command line!).
+
+For us on a shared(!) SLURM HPC cluster, the run (including the creation of fresh conda environments) took:
 
 ```log
-Duration    : 9h 34m 55s
-CPU hours   : 194.0 (3.2% failed)
+Duration    : 14h 2m 23s
+CPU hours   : 318.4
 ```
-
- <!-- TODO: Update with amount used -->
 
 ## Evaluating the results
 
+Once our pipeline run has completed, before we dive into analysing each MAG separately, we want to get an overview on the quality of the data, assembly, and final bins.
+
+For this, there are two primary files you should inspect:
+
+- `<--outdir>/multiqc/multiqc_report.tsv`
+- `<--outdir>/GenomeBinning/bin_summary.tsv`
+
+### Raw data, preprocessing and assembly evaluation
+
+To firstly evaluate the raw data (assuming not already performed prior running nf-core/mag), preprocessing. and initial assembly, we want to inspect the `multiqc_report.tsv` file.
+
+> [!NOTE]
+> If you have not executed the pipeline or still waiting for it to finish, you can find already made files in `$TUTORIAL_DIR/analysis/mag/data/premade_mag_results`.
+>
+> It does not matter which execution run you look at!
+
+In the MultiQC report, the primary sections you will want to evaluate are:
+
+- FastQC (before and after)
+- fastp
+- Bowtie2: PhiX removal
+- Bowtie2: host removal
+- QUAST: assembly
+
+The remaining sections will be covered in [Binning evaluation](#binning-evaluation).
+
+Following the summary of recommendations in Box 1 of Fellows Yates et al. 2026, we can use this report to evaluate the quality of data production, sequencing depth, and other preprocessing steps such as host removal.
+
+#### FastQC (raw and after preprocessing)
+
+As a general rule, evaluating the FastQC results follows typical NGS sequencing quality metrics.
+
+In the context of running nf-core/mag with ancient DNA we should in particular check that in the first FastQC section 'Sequence Counts', we have the number of reads requested from the sequencing facility.
+As a general rule, in metagenomic _de novo_ assembly the more the better - therefore you should double check you recieved what you expected (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
+
+You can also check the 'Sequence Length Distribution' section for a distribution with a peak somewhere in the range of 20-70 bp, which is the typical length of ancient DNA reads.
+If you have no peak around here, this _may_ (but not always!) indicate a badly preserved sample.
+
+You should also compare the 'FastQC: preprocessing' results section with the first 'raw reads' section to make sure all metrics have improved as expected (e.g. adapter content has reduced - however in this tutorial as we are using public data, this has already been removed).
+
+#### fastp
+
+As a general rule, evaluating the fatp results follows typical NGS sequencing quality metrics.
+
+You should see a general improvment in the reduction of N content and sequencing quality.
+
+As with FastQC, the 'insert Size Distribution' sectuin can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
+If you see a loss of this short reads, it may imply your read filtering settings are incorrect (Recommendation 7 of Box 1 of Fellows Yates et al. 2026).
+
+#### Bowtie2 (PhiX and host removal)
+
+In the Bowtie2 sections, you expect to see a certain amount of PhiX (assuming it's used as a control by your sequencing facility) and host DNA (in the case of this tutorial, _Homo spaiens_) being removed.
+
+The host DNA removed metrics should be particularly paid close attenion to, to ensure that you don't result in broken and/or chimeric contigs containing host DNA that can match contaminated reference genomes during taxonomic classification of contigs (Recommendation 4 of Box 1 of Fellows Yates et al. 2026).
+
+The exact amount will depend on the sample type, and sequencing depth.
+If you expected to see more, you should review your settings to ensure you have set alignment parameters suitable for aligning ultra-short DNA sequences (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
+
+In the case of the tutorial, no PhiX spike-in was used during sequencing of the ECO004 libraries, and only a very small amount of Human DNA is expected (primarily from modern DNA contaminatiion during handling), as the sample type is from dental calculus, which is primarily a microbial biofilm that forms on the surface of teeth - rather than being a human tissue itself.
+
+#### QUAST
+
+We can finally use the MultiQC report to do an initial evaluation of the assemblies themselves, using typical _de novo_ assembly metrics (N50, Largest contig ).
+
+We can already get a rough idea of the RATIO <!-- TODO --> (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+
+### Binning evaluation
+
 Against summary of recommendations
 
-1. Did we have appropriate data production --> see input data
+1. MULTIQC: Did we have appropriate data production --> see input data
    - We can see the difference in the the retrieved bin likely derived from the same species
    - MEGAHIT-SemiBin2Refined-ERR10114849.1.fa; MEGAHIT-SemiBin2Refined-ERR3579731.1.fa; MEGAHIT-SemiBin2Refined-ERR3579732.110.fa
    - all hit against 'Clostridiales' with BUSCO and GTDBTL reports the latter two to be `d__Bacteria;p__Bacillota;c__Clostridia;o__Peptostreptococcales;f__Anaerovoracaceae;g__RGIG7111;s__RGIG7111 sp036839975`
-2. Sequence to a sufficient depth -> see data input
+2. MULTIQC: Sequence to a sufficient depth -> see data input
    - Confidence increases with more depth (in the full UDG One) for the `s__RGIG7111 sp036839975`
-3. State of the data -> see MultiQC
+3. MULTIQC: State of the data -> see MultiQC
    1.
-4. Remove host sequences -> see MultiQC
+4. MULTIQC: Remove host sequences -> see MultiQC
 5. Select appropriate tools and databases -> done by MAG
 6. Co-assemble related samples -> did not do in this case to demonstrate difference
-7. Use aDNA tools and parameters -> done by MAG (`--ancient_dna`)
-8. Discard ultra-short contigs -> done by MAG (`--min_contig_size`)
+7. PARAMETERS Use aDNA tools and parameters -> done by MAG (`--ancient_dna`)
+8. PARAMETERS Discard ultra-short contigs -> done by MAG (`--min_contig_size`)
 9. Evaluate the prescne of chimeric MAGs -> ???
 10. Check ratio of short to long contigs -> need to do manually
-11. Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
-12. Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
-13. Correct for aDNA damage -> done by MAG automatically
+11. BINSUMMARY Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
+12. BINSUMMARY Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
+13. BINSUMMARY Correct for aDNA damage -> done by MAG automatically
 
 For pyDamage evaluation:
 
