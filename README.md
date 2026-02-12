@@ -9,12 +9,12 @@ This tutorial assumes you have:
 - A UNIX based machine (Linux, OSX)
 - At least 768.GB memory
 - At least 64 CPUs
-- At least 300 GB of free harddrive space
+- At least 300 GB of free hard-drive space
 - An internet connection
 
 > [!NOTE]
 > If you do not have sufficient resources, you can still follow the tutorial.
-> Skipping to [Evaluating the results](#evaluating-the-results), where the necessary results files are available premade for you.
+> Skipping to [Evaluating the results](#evaluating-the-results), where the necessary results files are available pre-made for you.
 
 ## Installation and Setup
 
@@ -81,7 +81,7 @@ This tutorial assumes you have:
    nextflow pull nf-core/mag -r 5.4.0
    ```
 
-7. Deactivate conda environement
+7. Deactivate conda environment
 
    ```bash
    conda deactivate
@@ -183,6 +183,8 @@ done
 ```
 
 We can then convert these samplesheets using `amdirt` to different files for preparing the input for nf-core/mag.
+
+<!-- TODO RETEST ON CLUSTER -->
 
 ```bash
 ## Raw data
@@ -375,7 +377,7 @@ To firstly evaluate the raw data (assuming not already performed prior running n
 > [!NOTE]
 > If you have not executed the pipeline or still waiting for it to finish, you can find already made files in `$TUTORIAL_DIR/analysis/mag/data/premade_mag_results`.
 >
-> It does not matter which execution run you look at!
+> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins (however high-quality bins will be present in both)
 
 In the MultiQC report, the primary sections you will want to evaluate are:
 
@@ -398,6 +400,9 @@ As a general rule, in metagenomic _de novo_ assembly the more the better - there
 
 You can also check the 'Sequence Length Distribution' section for a distribution with a peak somewhere in the range of 20-70 bp, which is the typical length of ancient DNA reads.
 If you have no peak around here, this _may_ (but not always!) indicate a badly preserved sample.
+If you do have this peak, this implies that you likely used suitable protocols for DNA extraction and library build that retain these very short sequences (Recommendation 1 and 3 of Box 1 of Fellows Yates et al. 2026).
+
+![MultiQC plot of the sequence length distribution plot from FastQC, with a peak around 20-35bp indicating the presence of likely ancient DNA sequences](assets/fastqc_sequence_length_distribution_plot.png)
 
 You should also compare the 'FastQC: preprocessing' results section with the first 'raw reads' section to make sure all metrics have improved as expected (e.g. adapter content has reduced - however in this tutorial as we are using public data, this has already been removed).
 
@@ -408,7 +413,10 @@ As a general rule, evaluating the fatp results follows typical NGS sequencing qu
 You should see a general improvment in the reduction of N content and sequencing quality.
 
 As with FastQC, the 'insert Size Distribution' sectuin can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
-If you see a loss of this short reads, it may imply your read filtering settings are incorrect (Recommendation 7 of Box 1 of Fellows Yates et al. 2026).
+
+![MultiQC plot of the Insert Size Distribution plot from fastp, with a distinct peak starting at 30 bp indicating the presence of likely ancient DNA sequences. The sharp start is due to the read-filtering settings executed during the nf-core/mag run.](assets/fastp-insert-size-plot.png)
+
+If you see no evidence of ultra-short reads, it may imply your read filtering settings are incorrect (Recommendation 7 of Box 1 of Fellows Yates et al. 2026).
 
 #### Bowtie2 (PhiX and host removal)
 
@@ -419,15 +427,26 @@ The host DNA removed metrics should be particularly paid close attenion to, to e
 The exact amount will depend on the sample type, and sequencing depth.
 If you expected to see more, you should review your settings to ensure you have set alignment parameters suitable for aligning ultra-short DNA sequences (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
-In the case of the tutorial, no PhiX spike-in was used during sequencing of the ECO004 libraries, and only a very small amount of Human DNA is expected (primarily from modern DNA contaminatiion during handling), as the sample type is from dental calculus, which is primarily a microbial biofilm that forms on the surface of teeth - rather than being a human tissue itself.
+In the case of the tutorial, no PhiX spike-in was used during sequencing of the ECO004 libraries, and only a very small amount of Human DNA is expected (primarily from modern DNA contamination during handling), as the sample type is from dental calculus, which is primarily a microbial biofilm that forms on the surface of teeth - rather than being a human tissue itself.
+
+![MultiQC plot of the Bowtie 2: PE Alignment Scores from Bowtie2 alignment against the human reference genome. The vast majority of reads are not aligned, representing non-host reads as expected from ancient dental calculus samples that are mineralised microbial biofilms. The mapped reads have been removed to reduce the risk of incorporating contamination into the assembly contigs.](assets/fastp-insert-size-plot.png)
 
 #### QUAST
 
-We can finally use the MultiQC report to do an initial evaluation of the assemblies themselves, using typical _de novo_ assembly metrics (N50, Largest contig ).
+We can finally use the MultiQC report to do an initial evaluation of the assemblies themselves, using typical _de novo_ assembly metrics (N50,largest contig, length etc.).
 
-We can already get a rough idea of the RATIO <!-- TODO --> (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+We can already get a rough idea of the ratio of short to long contigs by looking at the 'QUAST: assembly's 'Number of Contigs' stacked bar plot.
+
+![MultiQC plot of the QUAST 'Number of Contigs' metrics for assemblies. The large proportion of shorter contigs (0-1000bp) over long contigs, is a paradoxical good indicator for a succesful assembly of ancient DNA reads, as very short reads are expected to assemble poorly resulting in fragmented sequences](assets/quast_num_contigs.png)
+
+In this plot we can see the largest proportion of contigs are spanning a length of 0-1000 bp, whereas long contigs >1000 bp represent a very small proportion of the assembly (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+
+This infact represents a good indicator of an reasonable assembly of ancient DNA data, as short reads will not fragment well.
+This plot also demonstrates the important effects of sequencing depth in ancient DNA samples to mitigate the short reads, where the deep sequenced ERR357932 library retrieves a much larger number of longer contigs compared to the two shallow sequenced libraries (Recommendation 2 of Box 1 of Fellows Yates et al. 2026)
 
 ### Binning evaluation
+
+While we could continue using the MultiQC report for evaluating the bins, not all binning quality control
 
 Against summary of recommendations
 
