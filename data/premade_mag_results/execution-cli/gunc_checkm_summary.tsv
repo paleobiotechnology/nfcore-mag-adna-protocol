@@ -1,0 +1,12 @@
+genome	GUNC.n_contigs	GUNC.n_genes_called	GUNC.n_genes_mapped	GUNC.divergence_level	GUNC.contamination_portion	GUNC.n_effective_surplus_clades	GUNC.RRS	GUNC.CSS	checkM.lineage	checkM.genome_size	checkM.GC	checkM.coding_density	checkM.N50_contigs	checkM.completeness	checkM.contamination	checkM.strain_heterogeneity	pass.MIMAG_medium	pass.MIMAG_high	pass.GUNC
+MEGAHIT-SemiBin2Refined-ERR10114849.3	629	1061	960	family	0.64	2.88	0.53	0.21	o__Clostridiales (UID1120)	596746	43.0	89.12	956	34.97	0.73	0.0	False	False	True
+MEGAHIT-SemiBin2Refined-ERR3579731.1	764	1414	1288	family	0.64	3.03	0.51	0.2	o__Clostridiales (UID1120)	863015	42.6	87.93	1200	57.53	1.87	33.33	True	False	True
+MEGAHIT-COMEBinRefined-ERR3579732.5758	1486	4417	4137	family	0.15	0.37	0.59	0.25	o__Actinomycetales (UID2012)	3095287	69.6	91.14	2268	62.22	3.66	15.38	True	False	True
+MEGAHIT-COMEBinRefined-ERR3579732.7247	441	1497	1460	genus	0.03	0.06	0.83	0.62	o__Burkholderiales (UID4000)	1191993	61.1	88.49	3186	38.44	1.0	23.08	False	False	False
+MEGAHIT-COMEBinRefined-ERR3579732.7688	304	1426	1356	family	0.28	0.68	0.81	0.13	o__Burkholderiales (UID4105)	1262454	63.1	89.01	5446	32.66	0.5	33.33	False	False	True
+MEGAHIT-CONCOCTRefined-ERR3579732.18_sub	1181	3514	2759	phylum	0.49	1.48	0.45	0.89	c__Gammaproteobacteria (UID4267)	2304447	65.5	87.76	1787	19.03	2.37	0.0	False	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.1	1043	1584	1523	class	0.04	0.09	0.84	0.89	c__Bacilli (UID285)	910791	30.7	89.24	900	53.95	5.59	4.76	True	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.11	1551	2699	2360	family	0.31	0.98	0.34	0.49	k__Bacteria (UID3187)	1412494	70.1	91.94	906	52.93	8.1	10.53	True	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.17_sub	1689	3457	3246	order	0.03	0.06	0.76	0.91	c__Betaproteobacteria (UID3888)	2299959	52.7	92.81	1540	72.77	4.14	33.33	True	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.4	645	1875	1802	phylum	0.03	0.06	0.76	0.59	p__Euryarchaeota (UID3)	1538393	31.9	89.99	3013	95.03	2.0	0.0	True	True	False
+MEGAHIT-SemiBin2Refined-ERR3579732.61	114	1463	1352	class	0.08	0.17	0.53	0.22	o__Clostridiales (UID1120)	1447504	42.7	87.61	23498	91.84	0.35	0.0	True	True	True

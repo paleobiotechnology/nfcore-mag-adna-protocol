@@ -299,6 +299,11 @@ nextflow run nf-core/mag \
 > [!TIP]
 > If you get an error message of `ERROR ~ /analysis`, check that the `$TUTORIAL_DIR environment variable is set correctly.
 
+Note that we have set a lower DAS Tool bin refinement threshold score than the default in nf-core/mag.
+Following recommendation 7 and 11 of Box 1 of Fellows Yates et al. 2026, we reduce the score to account for the expected 'lower quality' of bins due to higher the fragmentation of the assemblies due to the very short reads.
+Furthermore, we have set a minimum conting length to 500 (Recommendation 8 of Box 1 of Fellows Yates et al. 2026), to remove ultra-short contigs which due to the fragmentation are expected to be present at high numbers and will greatly slow down the pipeline without much downstream analytical value.
+The specific thresholds will however depend on the aims of the project, and the quality of data and is not necessarily generalisable to all contexts.
+
 ### The JSON way
 
 However, setting up each parameter directly from the CLI can quickly become cumbersome.
@@ -469,7 +474,7 @@ In our example runs, we will find the following metrics:
 - `gtdbtk` results for
 - `pydamage` results for
 
-Note that the the bin refinement statistics from `dastool` nor `gunc` are currently integrated by the bin summary table generation script, and must be evaluated separately.
+Note that the the `gunc` statistics are currently integrated by the bin summary table generation script, and must be evaluated separately.
 
 #### Depth coverage
 
@@ -550,6 +555,8 @@ This information can be provided by the GTDBTk columns, that indicate similarity
 As noted in Fellows Yates et al. 2026, it is important to cross-reference the GDTB-Tk results with the output of chimerism checks from GUNC.
 Due to the larger number of shorter contigs in ancient DNA bins, there is a greater chance of chimeric bins which will mean that GTDB-Tk will be unable to reliably taxonomic classify the bin.
 
+<!-- TODO Demonstrate sucess of GTDBTk against depth metric (recommendation 2)-->
+
 To further verify the identification of the bins present in the assembly, you can cross-compare your results with read-based taxonomic classification (such as Kraken2).
 
 > [!TIP]
@@ -602,17 +609,46 @@ This is nicely demonstrated in the table above, where if we compare the library 
 - Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elavated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015](https://doi.org/10.1098/rstb.2013.0624))
 - Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevanted frequency (<0.0009 at it's peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment.
 
+It is important to know that for all of these pyDamgge metrics, we should always interpret them in the context of the number of reads (`nb_reads_aligned_pydamagebins`).
+The lower the number of reads being used to inform the statistical test, the weaker the reliability of the results will be.
+A good rule of thumb is that the results of bins with less than a median of 1000 reads should be interpreted with caution.
+
 Note that nf-core/mag's `--ancient_dna` mode automatically corrects for misincorporated damaged bases into contigs during assembly to satisfy recommendation 13 of Box 1 of Fellows Yates et al. 2026.
 
 ### Other Evaluations
 
+Other recommended evaluations of your ancient DNA assemblies not included in the two summary reports are checking for potentially chimeric bins.
+
 #### GUNC
 
+Ultra short reads that are harder to assemble together, increases the risk of more fragmented assemblies where contigs from two different organisms can be accidently mixed together, as there is nothing to span the gaps between actually related contigs.
+Therefore during assembly of ancient DNA samples, you should always evaluate the presence of chimeric bins (Recommendation 9 of Box 1 of Fellows Yates et al. 2026).
+)
+
+nf-core/mag includes GUNC for estimating chimerism and contamination, with the [`results/GenomeBinning/QC/gunc_checkm_summary.tsv`](data/premade_mag_results/execution-cli/gunc_checkm_summary.tsv) table convientntly combining both the CheckM and GUNC results to give estimation of whether each bin passes each type of MIMAG criteria!
+
+A subset of the columns can be seen here:
+
+| genome                                    | GUNC.contamination_portion | GUNC.RRS | GUNC.CSS | checkM.completeness | checkM.contamination | pass.MIMAG_medium | pass.MIMAG_high | pass.GUNC |
+| ----------------------------------------- | -------------------------- | -------- | -------- | ------------------- | -------------------- | ----------------- | --------------- | --------- |
+| MEGAHIT-SemiBin2Refined-ERR10114849.3     | 0.64                       | 0.53     | 0.21     | 34.97               | 0.73                 | FALSE             | FALSE           | TRUE      |
+| MEGAHIT-SemiBin2Refined-ERR3579731.1      | 0.64                       | 0.51     | 0.2      | 57.53               | 1.87                 | TRUE              | FALSE           | TRUE      |
+| MEGAHIT-COMEBinRefined-ERR3579732.5758    | 0.15                       | 0.59     | 0.25     | 62.22               | 3.66                 | TRUE              | FALSE           | TRUE      |
+| MEGAHIT-COMEBinRefined-ERR3579732.7247    | 0.03                       | 0.83     | 0.62     | 38.44               | 1                    | FALSE             | FALSE           | FALSE     |
+| MEGAHIT-COMEBinRefined-ERR3579732.7688    | 0.28                       | 0.81     | 0.13     | 32.66               | 0.5                  | FALSE             | FALSE           | TRUE      |
+| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub  | 0.49                       | 0.45     | 0.89     | 19.03               | 2.37                 | FALSE             | FALSE           | FALSE     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.1      | 0.04                       | 0.84     | 0.89     | 53.95               | 5.59                 | TRUE              | FALSE           | FALSE     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.11     | 0.31                       | 0.34     | 0.49     | 52.93               | 8.1                  | TRUE              | FALSE           | FALSE     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub | 0.03                       | 0.76     | 0.91     | 72.77               | 4.14                 | TRUE              | FALSE           | FALSE     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.4      | 0.03                       | 0.76     | 0.59     | 95.03               | 2                    | TRUE              | TRUE            | FALSE     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.61     | 0.08                       | 0.53     | 0.22     | 91.84               | 0.35                 | TRUE              | TRUE            | TRUE      |
+
+As a general rule, you want low 'Clade separate scores' (CSS - where detected genes fall in different clades of reference genomes) and high 'Reference representation scores' (RRS).
+
+When looking at the two MIMAG criteria columns, we can see we correctly estimated from the CheckM results previously that we have 2 high-quality MAGs, and 5 medium-quality MAGs.
+However GUNC reject four of these medium- and high-quality MAGs due to high CSS scores indicating a certain level of chimerism in the resulting bins.
+
 RECCOMENDATION 9. Evaluate the prescne of chimeric MAGs -> ???
-
-#### DAS Tool
-
-RECCCOMENDATION 11. BINSUMMARY Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
 
 Against summary of recommendations
 
@@ -631,9 +667,9 @@ Against summary of recommendations
 8. PARAMETERS Discard ultra-short contigs -> done by MAG (`--min_contig_size`)
 9. Evaluate the prescne of chimeric MAGs -> ???
 10. Check ratio of short to long contigs -> need to do manually
-11. BINSUMMARY Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
-12. BINSUMMARY Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
-13. BINSUMMARY Correct for aDNA damage -> done by MAG automatically
+
+11. BINSUMMARY Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
+12. BINSUMMARY Correct for aDNA damage -> done by MAG automatically
 
 For pyDamage evaluation:
 
@@ -657,6 +693,12 @@ predicted_accuracy >= 0.5 (or 50%)q_value <= 0.05 (or whatever you feel is a sui
 [2:11 PM]Alex Hübner Yes, it is. I would maybe add that you should take contigs with < 1,000 aligned reads with caution because of the stochasticity of the data. That's it.
 [2:18 PM]James Fellows Yates OK awesome (even if our test data violates the last one, we aren't toooo bad when looking at the quality of the data)
 [2:18 PM]Thank you! I'll add that to the text and to the tutorial
+
+## Conclusion
+
+We identify XXX confident
+
+<!-- TODO say we should still investigate low quality and chimeric mags through taxonomic classifcaitoin  - recommednatio n11  >
 
 ## Clean up
 

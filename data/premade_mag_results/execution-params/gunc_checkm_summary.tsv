@@ -1,0 +1,13 @@
+genome	GUNC.n_contigs	GUNC.n_genes_called	GUNC.n_genes_mapped	GUNC.divergence_level	GUNC.contamination_portion	GUNC.n_effective_surplus_clades	GUNC.RRS	GUNC.CSS	checkM.lineage	checkM.genome_size	checkM.GC	checkM.coding_density	checkM.N50_contigs	checkM.completeness	checkM.contamination	checkM.strain_heterogeneity	pass.MIMAG_medium	pass.MIMAG_high	pass.GUNC
+MEGAHIT-SemiBin2Refined-ERR3579731.0	770	1427	1296	family	0.64	3.05	0.51	0.21	o__Clostridiales (UID1120)	861955	42.7	88.15	1191	56.12	1.87	33.33	True	False	True
+MEGAHIT-SemiBin2Refined-ERR10114849.1	621	1053	951	class	0.05	0.1	0.53	0.26	o__Clostridiales (UID1120)	594075	43.1	88.55	957	35.4	0.8	33.33	False	False	True
+MEGAHIT-COMEBinRefined-ERR3579732.0_sub	868	1870	1538	family	0.68	3.76	0.27	0.82	p__Proteobacteria (UID3880)	1142775	64.4	88.87	1203	21.98	1.69	0.0	False	False	False
+MEGAHIT-COMEBinRefined-ERR3579732.2964	1580	4767	4425	family	0.13	0.31	0.56	0.25	o__Actinomycetales (UID2012)	3327855	69.4	90.55	2296	63.51	4.02	14.29	True	False	True
+MEGAHIT-CONCOCTRefined-ERR3579732.13	1001	4073	3881	genus	0.1	0.23	0.75	0.67	o__Burkholderiales (UID4000)	3311284	61.7	88.63	3731	68.54	4.53	15.0	True	False	False
+MEGAHIT-CONCOCTRefined-ERR3579732.22	787	3661	3590	family	0.32	0.77	0.87	0.16	o__Burkholderiales (UID4105)	3342703	65.7	88.88	4696	69.29	1.66	33.33	True	False	True
+MEGAHIT-SemiBin2Refined-ERR3579732.19_sub	1634	2847	2488	family	0.32	1.0	0.34	0.49	k__Bacteria (UID3187)	1490271	70.0	91.72	909	52.12	8.57	14.29	True	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.28	644	1871	1796	phylum	0.03	0.05	0.76	0.58	p__Euryarchaeota (UID3)	1535213	31.9	90.07	3014	94.23	2.8	0.0	True	True	False
+MEGAHIT-SemiBin2Refined-ERR3579732.31	1039	1574	1514	class	0.05	0.09	0.84	0.89	c__Bacilli (UID285)	908554	30.8	89.24	901	52.94	6.17	4.35	True	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.35	112	1461	1351	class	0.08	0.17	0.53	0.22	o__Clostridiales (UID1120)	1445173	42.7	87.6	23498	91.84	0.35	0.0	True	True	True
+MEGAHIT-SemiBin2Refined-ERR3579732.6_sub	982	1745	1684	order	0.05	0.11	0.82	0.96	o__Burkholderiales (UID4000)	1133145	62.9	90.58	1285	27.09	1.77	12.5	False	False	False
+MEGAHIT-SemiBin2Refined-ERR3579732.8_sub	1698	3480	3270	order	0.03	0.06	0.76	0.91	c__Betaproteobacteria (UID3888)	2308267	52.7	92.75	1536	73.57	4.75	36.84	True	False	False
