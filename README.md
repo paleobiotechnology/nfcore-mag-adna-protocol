@@ -367,17 +367,21 @@ Once our pipeline run has completed, before we dive into analysing each MAG sepa
 
 For this, there are two primary files you should inspect:
 
-- `<--outdir>/multiqc/multiqc_report.tsv`
-- `<--outdir>/GenomeBinning/bin_summary.tsv`
+- `< --outdir >/multiqc/multiqc_report.tsv`
+- `< --outdir >/GenomeBinning/bin_summary.tsv`
+
+These provide aggregated summary reports.
+
+Otherwise, we can manually explore the raw output from the respective per-tool directories.
 
 ### Raw data, preprocessing and assembly evaluation
 
 To firstly evaluate the raw data (assuming not already performed prior running nf-core/mag), preprocessing. and initial assembly, we want to inspect the `multiqc_report.tsv` file.
 
 > [!NOTE]
-> If you have not executed the pipeline or still waiting for it to finish, you can find already made files in `$TUTORIAL_DIR/analysis/mag/data/premade_mag_results`.
+> If you have not executed the pipeline or still waiting for it to finish, you can find already made files in `$TUTORIAL_DIR/analysis/premade_mag_results/`.
 >
-> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins (however high-quality bins will be present in both)
+> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins between the two execution methods (however high-quality bins will be present in both)
 
 In the MultiQC report, the primary sections you will want to evaluate are:
 
@@ -431,7 +435,7 @@ In the case of the tutorial, no PhiX spike-in was used during sequencing of the 
 
 ![MultiQC plot of the Bowtie 2: PE Alignment Scores from Bowtie2 alignment against the human reference genome. The vast majority of reads are not aligned, representing non-host reads as expected from ancient dental calculus samples that are mineralised microbial biofilms. The mapped reads have been removed to reduce the risk of incorporating contamination into the assembly contigs.](assets/fastp-insert-size-plot.png)
 
-#### QUAST
+#### QUAST (assemblies)
 
 We can finally use the MultiQC report to do an initial evaluation of the assemblies themselves, using typical _de novo_ assembly metrics (N50,largest contig, length etc.).
 
@@ -446,7 +450,110 @@ This plot also demonstrates the important effects of sequencing depth in ancient
 
 ### Binning evaluation
 
-While we could continue using the MultiQC report for evaluating the bins, not all binning quality control
+While we could continue using the MultiQC report for evaluating the bins, not all binning quality control tools are supported by MultiQC.
+Furthermore, it can be easier to evaluate when all metrics from one sample are in the same place, rather than split over multiple plots.
+
+nf-core/mag generates a custom `bin_summary.tsv` table that combines all relevant metrics useful for evaluating all the final MAGs in one place.
+This makes it easier to cross compare across all metrics, but also easier to filter when you have a large numbers of bins.
+
+> [!NOTE]
+> If you have not executed the pipeline or still waiting for it to finish, you can find already made files in `$TUTORIAL_DIR/analysis/premade_mag_results/`.
+>
+> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins between the two execution methods (however high-quality bins will be present in both)
+
+In our example runs, we will find the following metrics:
+
+- Mapping fold-coverage depths
+- `checkm` results for
+- `quast` (at bin level) for
+- `gtdbtk` results for
+- `pydamage` results for
+
+Note that the the bin refinement statistics from `dastool` nor `gunc` are currently integrated by the bin summary table generation script, and must be evaluated separately.
+
+#### Depth coverage
+
+The depth coverage columns of the `bin_summary.tsv` can give you a rough idea of the 'strength' of the presence of that MAG within the sample.
+
+This column can be used for reporting against the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)), as it can contribute to the 'Assembly quality' section of the 'Genome quality' section.
+
+#### CheckM
+
+The integration of CheckM within nf-core/mag allows us to estimate Completeness and Contamination scores of bacterial and archael MAGs, based on lineage-specific marker genes.
+
+This column can be used for reporting against the 'Completeness' and 'Contamination' specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)).
+
+| Level                | Completeness score | Contamination Score |
+| -------------------- | ------------------ | ------------------- |
+| High Quality Draft   | >90%               | <5%                 |
+| Medium Quality Draft | >50%               | <10%                |
+| Low Quality Draft    | <50%               | <10%                |
+
+If we inspect the elevant columns of our pre-made example table (`execution-cli`):
+
+| Bin Id_checkm                             | Marker lineage_checkm              | Completeness_checkm | Contamination_checkm | Partial MIMAG Assesment |
+| ----------------------------------------- | ---------------------------------- | ------------------- | -------------------- | ----------------------- |
+| MEGAHIT-SemiBin2Refined-ERR3579732.4      | p\_\_Euryarchaeota (UID3)          | 95.03               | 2                    | High                    |
+| MEGAHIT-SemiBin2Refined-ERR3579732.61     | o\_\_Clostridiales (UID1120)       | 91.84               | 0.35                 | High                    |
+| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub | c\_\_Betaproteobacteria (UID3888)  | 72.77               | 4.14                 | Medium                  |
+| MEGAHIT-COMEBinRefined-ERR3579732.5758    | o\_\_Actinomycetales (UID2012)     | 62.22               | 3.66                 | Medium                  |
+| MEGAHIT-SemiBin2Refined-ERR3579731.1      | o\_\_Clostridiales (UID1120)       | 57.53               | 1.87                 | Medium                  |
+| MEGAHIT-SemiBin2Refined-ERR3579732.1      | c\_\_Bacilli (UID285)              | 53.95               | 5.59                 | Medium                  |
+| MEGAHIT-SemiBin2Refined-ERR3579732.11     | k\_\_Bacteria (UID3187)            | 52.93               | 8.1                  | Medium                  |
+| MEGAHIT-COMEBinRefined-ERR3579732.7247    | o\_\_Burkholderiales (UID4000)     | 38.44               | 1                    | Low                     |
+| MEGAHIT-SemiBin2Refined-ERR10114849.3     | o\_\_Clostridiales (UID1120)       | 34.97               | 0.73                 | Low                     |
+| MEGAHIT-COMEBinRefined-ERR3579732.7688    | o\_\_Burkholderiales (UID4105)     | 32.66               | 0.5                  | Low                     |
+| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub  | c\_\_Gammaproteobacteria (UID4267) | 19.03               | 2.37                 | Low                     |
+
+Of our bins we have:
+
+- 2 high quality draft MAGs
+- 5 medium quality draft MAGs
+- 4 low quality draft MAGs
+
+Note the higher proportion of medium quality bins is to be expected in assembly of ancient DNA samples, due to the shorter reads and lower biomass resulting in more fragmented assemblies and thus typically lower completeness (e.g. when contigs from ancient DNA cannot completely span entire marker genes)
+These medium quality MAGs should still be explored however, as they may still be sufficient for some types of analyses (e.g. phylogenomics).
+
+#### QUAST (bins)
+
+As with the assembly metrics, we can use the QUAST columns to evaluate the quality of bins using standard assembly metrics (N50,largest contig, length etc.).
+
+We can again use these values to calculate the ratio of short to long contigs bstacked bar plot.
+
+| Assembly_quast                               | # contigs (>= 0 bp)\_quast | # contigs (>= 1000 bp)\_quast | # contigs (>= 5000 bp)\_quast | # contigs (>= 10000 bp)\_quast | # contigs (>= 25000 bp)\_quast | # contigs (>= 50000 bp)\_quast | Total length (>= 0 bp)\_quast | Total length (>= 1000 bp)\_quast | Total length (>= 5000 bp)\_quast | Total length (>= 10000 bp)\_quast | Total length (>= 25000 bp)\_quast | Total length (>= 50000 bp)\_quast | # contigs_quast | Largest contig_quast | Total length_quast | GC (%)\_quast | N50_quast | N75_quast | L50_quast | L75_quast | # N's per 100 kbp_quast | # predicted rRNA genes_quast |
+| -------------------------------------------- | -------------------------- | ----------------------------- | ----------------------------- | ------------------------------ | ------------------------------ | ------------------------------ | ----------------------------- | -------------------------------- | -------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- | --------------- | -------------------- | ------------------ | ------------- | --------- | --------- | --------- | --------- | ----------------------- | ---------------------------- |
+| MEGAHIT-SemiBin2Refined-ERR3579732.4.fa      | 648                        | 535                           | 48                            | 1                              | 0                              | 0                              | 1538393                       | 1452969                          | 321437                           | 10566                             | 0                                 | 0                                 | 648             | 10566                | 1538393            | 31.87         | 3013      | 1858      | 169       | 327       | 0                       | 0 + 0 part                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.61.fa     | 114                        | 107                           | 72                            | 51                             | 19                             | 0                              | 1447504                       | 1442383                          | 1351100                          | 1198202                           | 675366                            | 0                                 | 114             | 45113                | 1447504            | 42.75         | 23498     | 13199     | 21        | 42        | 0                       | 0 + 0 part                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub.fa | 1735                       | 991                           | 6                             | 0                              | 0                              | 0                              | 2299959                       | 1757510                          | 36638                            | 0                                 | 0                                 | 0                                 | 1735            | 7061                 | 2299959            | 52.67         | 1540      | 1032      | 501       | 959       | 0                       | 1 + 0 part                   |
+| MEGAHIT-COMEBinRefined-ERR3579732.5758.fa    | 1489                       | 1489                          | 44                            | 1                              | 0                              | 0                              | 3095287                       | 3095287                          | 262271                           | 10458                             | 0                                 | 0                                 | 1489            | 10458                | 3095287            | 69.56         | 2268      | 1547      | 457       | 871       | 0                       | 1 + 0 part                   |
+| MEGAHIT-SemiBin2Refined-ERR3579731.1.fa      | 787                        | 363                           | 0                             | 0                              | 0                              | 0                              | 863015                        | 554390                           | 0                                | 0                                 | 0                                 | 0                                 | 787             | 4518                 | 863015             | 42.65         | 1200      | 847       | 251       | 465       | 0                       | 1 + 1 part                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.1.fa      | 1053                       | 271                           | 0                             | 0                              | 0                              | 0                              | 910791                        | 369225                           | 0                                | 0                                 | 0                                 | 0                                 | 1053            | 3828                 | 910791             | 30.73         | 900       | 667       | 363       | 660       | 0                       | 1 + 0 part                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.11.fa     | 1593                       | 428                           | 0                             | 0                              | 0                              | 0                              | 1412494                       | 601956                           | 0                                | 0                                 | 0                                 | 0                                 | 1593            | 3387                 | 1412494            | 70.14         | 906       | 677       | 538       | 990       | 0                       | 0 + 0 part                   |
+| MEGAHIT-COMEBinRefined-ERR3579732.7247.fa    | 441                        | 441                           | 44                            | 2                              | 0                              | 0                              | 1191993                       | 1191993                          | 300589                           | 24067                             | 0                                 | 0                                 | 441             | 13762                | 1191993            | 61.08         | 3186      | 2006      | 118       | 234       | 0                       | 0 + 0 part                   |
+| MEGAHIT-SemiBin2Refined-ERR10114849.3.fa     | 648                        | 206                           | 0                             | 0                              | 0                              | 0                              | 596746                        | 284482                           | 0                                | 0                                 | 0                                 | 0                                 | 648             | 4109                 | 596746             | 43            | 956       | 709       | 221       | 401       | 0                       | 0 + 0 part                   |
+| MEGAHIT-COMEBinRefined-ERR3579732.7688.fa    | 306                        | 306                           | 83                            | 13                             | 0                              | 0                              | 1262454                       | 1262454                          | 674846                           | 182911                            | 0                                 | 0                                 | 306             | 22867                | 1262454            | 63.13         | 5446      | 3312      | 75        | 151       | 0                       | 1 + 0 part                   |
+| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub.fa  | 1215                       | 1215                          | 51                            | 17                             | 2                              | 0                              | 2304447                       | 2304447                          | 525755                           | 278631                            | 69874                             | 0                                 | 1215            | 43658                | 2304447            | 65.51         | 1787      | 1202      | 280       | 688       | 0                       | 0 + 0 part                   |
+
+In this plot we can see the largest proportion of contigs are spanning a length of 0-1000 bp, whereas long contigs >1000 bp represent a very small proportion of the assembly (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+
+This infact represents a good indicator of an reasonable assembly of ancient DNA data, as short reads will not fragment well.
+This plot also demonstrates the important effects of sequencing depth in ancient DNA samples to mitigate the short reads, where the deep sequenced ERR357932 library retrieves a much larger number of longer contigs compared to the two shallow sequenced libraries (Recommendation 2 of Box 1 of Fellows Yates et al. 2026)
+
+#### GTDBTk
+
+#### pyDamage
+
+RECCOMENDATION 12. BINSUMMARY Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv` 13. BINSUMMARY Correct for aDNA damage -> done by MAG automatically
+
+### Other Evaluation
+
+#### GUNC
+
+RECCOMENDATION 9. Evaluate the prescne of chimeric MAGs -> ???
+
+#### DAS Tool
+
+RECCCOMENDATION 11. BINSUMMARY Validate low quality MAGs -> reduced bin score in DAS tool (` --refine_bins_dastool_threshold`)
 
 Against summary of recommendations
 
