@@ -555,8 +555,6 @@ This information can be provided by the GTDBTk columns, that indicate similarity
 As noted in Fellows Yates et al. 2026, it is important to cross-reference the GDTB-Tk results with the output of chimerism checks from GUNC.
 Due to the larger number of shorter contigs in ancient DNA bins, there is a greater chance of chimeric bins which will mean that GTDB-Tk will be unable to reliably taxonomic classify the bin.
 
-<!-- TODO Demonstrate sucess of GTDBTk against depth metric (recommendation 2)-->
-
 To further verify the identification of the bins present in the assembly, you can cross-compare your results with read-based taxonomic classification (such as Kraken2).
 
 > [!TIP]
@@ -623,7 +621,6 @@ Other recommended evaluations of your ancient DNA assemblies not included in the
 
 Ultra short reads that are harder to assemble together, increases the risk of more fragmented assemblies where contigs from two different organisms can be accidently mixed together, as there is nothing to span the gaps between actually related contigs.
 Therefore during assembly of ancient DNA samples, you should always evaluate the presence of chimeric bins (Recommendation 9 of Box 1 of Fellows Yates et al. 2026).
-)
 
 nf-core/mag includes GUNC for estimating chimerism and contamination, with the [`results/GenomeBinning/QC/gunc_checkm_summary.tsv`](data/premade_mag_results/execution-cli/gunc_checkm_summary.tsv) table convientntly combining both the CheckM and GUNC results to give estimation of whether each bin passes each type of MIMAG criteria!
 
@@ -648,66 +645,76 @@ As a general rule, you want low 'Clade separate scores' (CSS - where detected ge
 When looking at the two MIMAG criteria columns, we can see we correctly estimated from the CheckM results previously that we have 2 high-quality MAGs, and 5 medium-quality MAGs.
 However GUNC reject four of these medium- and high-quality MAGs due to high CSS scores indicating a certain level of chimerism in the resulting bins.
 
-RECCOMENDATION 9. Evaluate the prescne of chimeric MAGs -> ???
-
-Against summary of recommendations
-
-1. MULTIQC: Did we have appropriate data production --> see input data
-   - We can see the difference in the the retrieved bin likely derived from the same species
-   - MEGAHIT-SemiBin2Refined-ERR10114849.1.fa; MEGAHIT-SemiBin2Refined-ERR3579731.1.fa; MEGAHIT-SemiBin2Refined-ERR3579732.110.fa
-   - all hit against 'Clostridiales' with BUSCO and GTDBTL reports the latter two to be `d__Bacteria;p__Bacillota;c__Clostridia;o__Peptostreptococcales;f__Anaerovoracaceae;g__RGIG7111;s__RGIG7111 sp036839975`
-2. MULTIQC: Sequence to a sufficient depth -> see data input
-   - Confidence increases with more depth (in the full UDG One) for the `s__RGIG7111 sp036839975`
-3. MULTIQC: State of the data -> see MultiQC
-   1.
-4. MULTIQC: Remove host sequences -> see MultiQC
-5. Select appropriate tools and databases -> done by MAG
-6. Co-assemble related samples -> did not do in this case to demonstrate difference
-7. PARAMETERS Use aDNA tools and parameters -> done by MAG (`--ancient_dna`)
-8. PARAMETERS Discard ultra-short contigs -> done by MAG (`--min_contig_size`)
-9. Evaluate the prescne of chimeric MAGs -> ???
-10. Check ratio of short to long contigs -> need to do manually
-
-11. BINSUMMARY Authetnicate contigs and bins -> check pyDamage results in `bin_summary.tsv`
-12. BINSUMMARY Correct for aDNA damage -> done by MAG automatically
-
-For pyDamage evaluation:
-
-Alex Hübner The two important values that I look at generally are the predicted_accuracy and the qvalue.
-The predicted_accuracy summarises how much data were available to compare them to the model predictions and usually correlates with the number of aligned reads.
-
-The rough guide is that you should have:
-
-- at least 50% predicted accuracy (but Maxime wrote that there is a function that can evaluate the best cut off for the particular experiment. However, I have never used it).
-- Second, I check the qvalue and simply ask whether it is < 0.05 or < 0.01 depending how accurate I would like to be.
-
-The other summary statistics, such as null_model_p* or damage_model_p* , summarise the fit of each of the two models to the data. So a researcher could make use of these if they want to be very sure about their results. The column RSME summarises this to as it states how far the distance between the points and the curves inferred by the models are.
-But to be far, I would use the latter only on edge cases when I am super interested in an individual contig and the predicted_accuracy and qvalue are not super indicative, whether there is ancient DNA damage. And this happens usually never.
-[2:09 PM]James Fellows Yates Hahaha ok ok. This then tracks with what I thought I think.
-
-So would you say we could maybe advise in the paper then for general rule of thumb 'evaluation':
-
-You can be reasonable comfortable reporting an ancient bin if:
-
-predicted_accuracy >= 0.5 (or 50%)q_value <= 0.05 (or whatever you feel is a suitable statistical significance threshold)(If you want 'classical' damage smiley plot information) Decreasing values from CtoT-0 to CtoT-12 columns according to the damage treatment type (if any)[2:09 PM]Would that be reasonable?
-[2:11 PM]Alex Hübner Yes, it is. I would maybe add that you should take contigs with < 1,000 aligned reads with caution because of the stochasticity of the data. That's it.
-[2:18 PM]James Fellows Yates OK awesome (even if our test data violates the last one, we aren't toooo bad when looking at the quality of the data)
-[2:18 PM]Thank you! I'll add that to the text and to the tutorial
-
 ## Conclusion
 
-We identify XXX confident
+To summarise, we can bring all the metrics together.
+If you have R available, you could use this little script to join the relevant tables together.
 
-<!-- TODO say we should still investigate low quality and chimeric mags through taxonomic classifcaitoin  - recommednatio n11  >
+```r
+## Load libraries
+library(readr)
+library(dplyr)
+
+
+## Load data
+binsummary <- read_tsv("data/premade_mag_results/execution-cli/bin_summary.tsv")
+guncscore <- read_tsv("data/premade_mag_results/execution-cli/gunc_checkm_summary.tsv") |> mutate(genome = paste0(genome, '.fa'))
+
+## Merge tables, and specify thresholds to allow indicate pass
+binsummary |>  left_join(guncscore, by = c('bin' = 'genome')) |>
+  mutate(
+    is_lq_mag = if_else(Completeness_checkm < 50 & Contamination_checkm <= 10, TRUE, FALSE),
+    is_mq_mag = if_else(Completeness_checkm >= 50 & Contamination_checkm <= 10, TRUE, FALSE),
+    is_hq_mag = if_else(Completeness_checkm >= 90 & Contamination_checkm <= 5, TRUE, FALSE),
+    is_ancient = if_else(nb_reads_aligned_pydamagebins >= 1000 & predicted_accuracy_pydamagebins >= 0.5 & qvalue_pydamagebins <= 0.05, TRUE, FALSE)
+  ) |> select(bin, Completeness_checkm, Contamination_checkm, pass.GUNC, starts_with('is_')) |>
+  write_tsv(file = 'analysis/screening/execution_cli_final_summary.tsv')
+```
+
+| bin                                          | Completeness_checkm | Contamination_checkm | pass.GUNC | is_lq_mag | is_mq_mag | is_hq_mag | is_ancient |
+| -------------------------------------------- | ------------------- | -------------------- | --------- | --------- | --------- | --------- | ---------- |
+| MEGAHIT-COMEBinRefined-ERR3579732.5758.fa    | 62.22               | 3.66                 | TRUE      | FALSE     | TRUE      | FALSE     | FALSE      |
+| MEGAHIT-COMEBinRefined-ERR3579732.7247.fa    | 38.44               | 1                    | FALSE     | TRUE      | FALSE     | FALSE     | FALSE      |
+| MEGAHIT-COMEBinRefined-ERR3579732.7688.fa    | 32.66               | 0.5                  | TRUE      | TRUE      | FALSE     | FALSE     | FALSE      |
+| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub.fa  | 19.03               | 2.37                 | FALSE     | TRUE      | FALSE     | FALSE     | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR10114849.3.fa     | 34.97               | 0.73                 | TRUE      | TRUE      | FALSE     | FALSE     | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR3579731.1.fa      | 57.53               | 1.87                 | TRUE      | FALSE     | TRUE      | FALSE     | TRUE       |
+| MEGAHIT-SemiBin2Refined-ERR3579732.1.fa      | 53.95               | 5.59                 | FALSE     | FALSE     | TRUE      | FALSE     | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR3579732.11.fa     | 52.93               | 8.1                  | FALSE     | FALSE     | TRUE      | FALSE     | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub.fa | 72.77               | 4.14                 | FALSE     | FALSE     | TRUE      | FALSE     | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR3579732.4.fa      | 95.03               | 2                    | FALSE     | FALSE     | TRUE      | TRUE      | FALSE      |
+| MEGAHIT-SemiBin2Refined-ERR3579732.61.fa     | 91.84               | 0.35                 | TRUE      | FALSE     | TRUE      | TRUE      | TRUE       |
+
+> [!NOTE]
+> We do not include such an evaluation script in nf-core/mag, as the specific thresholds for ancient DNA damage and GUNC scores depend on each project and dataset.
+> Therefore it is better to explore the summary table and make your own decisions on how to proceed, depending on your questions.
+
+Here we can see we have one high quality MAG `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` that also shows characteristics of ancient DNA, and also passes the GUNC chimerism check.
+We also have a single medium quality MAG that also displayed ancient DNA damage and passed the GUNC threshold `MEGAHIT-SemiBin2Refined-ERR3579731.1.fa`.
+
+If we check the `classification_gtdbtk` results both of these bins, coming from the non-UDG and full-UDG damage treated libraries, they both have the same classification of `d__Bacteria;p__Bacillota;c__Clostridia;o__Peptostreptococcales;f__Anaerovoracaceae;g__RGIG7111;s__RGIG7111 sp036839975`, showing how even with high fragmentation and damage, ancient microbial genomes can be assembled from ancient DNA reads.
+
+It's important to reiterate that the medium- and lower-quality MAGs should still be investigated (Recommendation 11 of Box 1 of Fellows Yates et al. 2026).
+Depending on your use case, lower-quality MAGs may represent sufficiently high quality for certain analyses, and other methods (such as phylogenomic positioning) can indicate an ancient genome in the absence of damage.
+
+In this case, mapping the shallowly sequenced non-UDG (retaining damage) library reads against the deep sequenced full-UDG (damaged removed), may help further identify more bins that in fact are likely ancient.
+Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement.
 
 ## Clean up
 
 To remove the entire tutorial directory
 
 ```bash
-conda init --reverse $(basename SHELL)
+## If conda installed for the purposes of this tutorial, run this command
+## conda init --reverse $(basename SHELL)
+
+## Remove environments
+conda env remove -n nextflow
+conda env remove -n amdirt
+conda env remove -n gunc
 
 ## Triple check this command before executing that it definitely points to the tutorial directory, -rf can be dangerous!
+cd $TUTORIAL_DIR
 cd ../
 rm -rf ./ancientdna-nfcoremag-tutorial/
 ```
