@@ -3,6 +3,7 @@ bin/nextflow
 .nextflow
 work
 results
+results_params
 null
 .nextflow.log*
 *.fastq.gz
