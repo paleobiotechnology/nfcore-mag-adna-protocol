@@ -11,3 +11,4 @@ cache/database/*
 !cache/database/README.md
 
 .Rproj.user
+.Rhistory

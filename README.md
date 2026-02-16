@@ -210,7 +210,7 @@ Once downloaded, we can add the full paths in the samplesheet.
 ## To verify the correct paths
 sed "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 
-## To update the samplesheet
+## To update the samplesheet (run only when you're happy the paths are correct!)
 sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
 
@@ -224,12 +224,6 @@ sed -i "s/ERS3774460,/ERS3774460,ILLUMINA,/" analysis/mag/AncientMetagenomeDir_n
 ## Pipeline setup and run
 
 There are multiple different ways to specify nf-core/mag parameters, we'll highlight the two main ones.
-
-For both methods, first activate main Nextflow conda environment
-
-```bash
-conda activate nextflow
-```
 
 For preparing our command we will skip a few steps that are not necessary for the purposes of this tutorial for reasons of speed, such as skipping metaeuk (can be slow, for eukaryotic contig detection), SPAdes (which is very slow and requires large amounts of computational resources), and Prodigal annotation (which will instead be performed at the bin level with Prokka).
 We also exclude unbinned contigs from post-binning to reduce run time.
@@ -254,6 +248,7 @@ First make sure to create a `screen` session to allow disconnection from the ser
 ```bash
 screen -R mag_run
 export TUTORIAL_DIR=$(pwd)
+conda activate nextflow
 cd analysis/mag
 ## Don't forget any other dependencies you need to run the pipeline on your specific infrastructure, such as `module load` commands!
 ```
@@ -287,7 +282,7 @@ nextflow run nf-core/mag \
 --run_busco false \
 --checkm_db $TUTORIAL_DIR/cache/database/checkm_data_2015_01_16 \
 --refine_bins_dastool \
---refine_bins_dastool_threshold 0.3
+--refine_bins_dastool_threshold 0.3 \
 --postbinning_input refined_bins_only \
 --run_gunc \
 --gunc_db $TUTORIAL_DIR/cache/database/gunc_db/gunc_db_progenomes2.1.dmnd \
