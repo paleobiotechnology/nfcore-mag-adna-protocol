@@ -1,0 +1,19 @@
+{
+  "reads_minlength": 30,
+  "host_genome": "GRCh37",
+  "skip_spades": true,
+  "skip_spadeshybrid": true,
+  "skip_prodigal": true,
+  "skip_metaeuk": true,
+  "binning_map_mode": "own",
+  "min_contig_size": 500,
+  "save_assembly_mapped_reads": true,
+  "exclude_unbins_from_postbinning": true,
+  "run_checkm": true,
+  "run_busco": false,
+  "refine_bins_dastool": true,
+  "refine_bins_dastool_threshold": 0.3,
+  "postbinning_input": "refined_bins_only",
+  "run_gunc": true,
+  "ancient_dna": true
+}
