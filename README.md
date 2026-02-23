@@ -28,8 +28,7 @@ This tutorial assumes you have:
    export TUTORIAL_DIR=$(pwd)
    ```
 
-   > [!NOTE]
-   > We assume you will want to remove the entire contents of this tutorial on completion.
+   > ℹ️ We assume you will want to remove the entire contents of this tutorial on completion.
    > If you wish to retain certain files (e.g. downloaded databases), make sure to place them in a safe location outside the tutorial directory, and update file paths accordingly.
 
 2. (⚠️ if not already installed) Install conda through miniforge
