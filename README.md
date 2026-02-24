@@ -105,8 +105,9 @@ This tutorial assumes you have:
    > If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
    > While _within_ the GUNC conda environment, run the following command:
    >
+   > # COMMENT: I think we have to pin the version of setuptools to 75 because with the later ones it complained to me that pkg_resources is deprecated and should be changed to use a different Python package
    > ```bash
-   > conda install -c conda-forge setuptools
+   > conda install -c conda-forge setuptools=75
    > ```
 
 2. Download databases for each tool into cache directory
@@ -214,12 +215,7 @@ sed "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDi
 sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
 
-We will also need to do a little but of repair work because `amdirt` currently supports an older version of nf-core/mag
-
-```bash
-sed -i "s/group,/group,short_reads_platform,/g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
-sed -i "s/ERS3774460,/ERS3774460,ILLUMINA,/" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
-```
+# COMMENT: This should be fixed in amdirt v1.7.1, shouldn't it?
 
 ## Pipeline setup and run
 
@@ -237,7 +233,7 @@ Finally we also run `--ancient_dna` for automatic setting of suitable short-read
 > [!WARNING]
 > This command or `params.yml` method of configuration assumes you are running on a server with internet access, and specifically to the public AWS iGenome bucket for downloading pre-made host genome indices
 > If you do not have internet access, you will need to download the host genome indices yourself, and specify the path to the local genome FASTA file with the `--host_fasta` parameter.
-> Furthermore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the a directory containing bowtie2 index files of the genome.
+> Furthermore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the directory containing bowtie2 index files of the genome.
 
 ### The CLI way
 
@@ -296,7 +292,7 @@ nextflow run nf-core/mag \
 
 Note that we have set a lower DAS Tool bin refinement threshold score than the default in nf-core/mag.
 Following recommendation 7 and 11 of Box 1 of Fellows Yates et al. 2026, we reduce the score to account for the expected 'lower quality' of bins due to higher the fragmentation of the assemblies due to the very short reads.
-Furthermore, we have set a minimum conting length to 500 (Recommendation 8 of Box 1 of Fellows Yates et al. 2026), to remove ultra-short contigs which due to the fragmentation are expected to be present at high numbers and will greatly slow down the pipeline without much downstream analytical value.
+Furthermore, we have set a minimum contig length to 500 (Recommendation 8 of Box 1 of Fellows Yates et al. 2026), to remove ultra-short contigs which due to the fragmentation are expected to be present at high numbers and will greatly slow down the pipeline without much downstream analytical value.
 The specific thresholds will however depend on the aims of the project, and the quality of data and is not necessarily generalisable to all contexts.
 
 ### The JSON way
@@ -305,7 +301,7 @@ However, setting up each parameter directly from the CLI can quickly become cumb
 
 Alternatively, another way to specify parameters is to use a parameters JSON file, here saved as `nf-params.json`.
 This JSON file can either be prepared manually in a text editor, or with the help of the online interactivate nf-core/launch tool ([https://nf-co.re/launch/](https://nf-co.re/launch/)).
-One parameters have been specified, nf-core tools provides a `nf-params.json` to download.
+Once parameters have been specified, nf-core tools provides a `nf-params.json` to download.
 
 ![Screenshot of the nf-core-launch page for nf-core/mag 5.4.0, with a few input parameters shown (free text and radio button option ones)](assets/tutorial-figure-launchpage.png)
 
@@ -376,7 +372,7 @@ Otherwise, we can manually explore the raw output from the respective per-tool d
 
 ### Raw data, preprocessing and assembly evaluation
 
-To firstly evaluate the raw data (assuming not already performed prior running nf-core/mag), preprocessing. and initial assembly, we want to inspect the `multiqc_report.tsv` file.
+To firstly evaluate the raw data (assuming not already performed prior running nf-core/mag), preprocessing, and initial assembly, we want to inspect the `multiqc_report.tsv` file.
 
 > [!NOTE]
 > If you have not executed the pipeline or still waiting for it to finish, you can find already made files in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/multiqc_report.html).
@@ -400,7 +396,7 @@ Following the summary of recommendations in Box 1 of Fellows Yates et al. 2026, 
 As a general rule, evaluating the FastQC results follows typical NGS sequencing quality metrics.
 
 In the context of running nf-core/mag with ancient DNA we should in particular check that in the first FastQC section 'Sequence Counts', we have the number of reads requested from the sequencing facility.
-As a general rule, in metagenomic _de novo_ assembly the more the better - therefore you should double check you recieved what you expected (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
+As a general rule, in metagenomic _de novo_ assembly the more, the better - therefore you should double check that you received what you expected (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
 You can also check the 'Sequence Length Distribution' section for a distribution with a peak somewhere in the range of 20-70 bp, which is the typical length of ancient DNA reads.
 If you have no peak around here, this _may_ (but not always!) indicate a badly preserved sample.
@@ -412,11 +408,11 @@ You should also compare the 'FastQC: preprocessing' results section with the fir
 
 #### fastp
 
-As a general rule, evaluating the fatp results follows typical NGS sequencing quality metrics.
+As a general rule, evaluating the fastp results follows typical NGS sequencing quality metrics.
 
-You should see a general improvment in the reduction of N content and sequencing quality.
+You should see a general improvement in the reduction of N content and sequencing quality.
 
-As with FastQC, the 'insert Size Distribution' sectuin can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
+As with FastQC, the 'insert Size Distribution' section can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
 
 ![MultiQC plot of the Insert Size Distribution plot from fastp, with a distinct peak starting at 30 bp indicating the presence of likely ancient DNA sequences. The sharp start is due to the read-filtering settings executed during the nf-core/mag run.](assets/fastp-insert-size-plot.png)
 
@@ -424,16 +420,16 @@ If you see no evidence of ultra-short reads, it may imply your read filtering se
 
 #### Bowtie2 (PhiX and host removal)
 
-In the Bowtie2 sections, you expect to see a certain amount of PhiX (assuming it's used as a control by your sequencing facility) and host DNA (in the case of this tutorial, _Homo spaiens_) being removed.
+In the Bowtie2 sections, you expect to see a certain amount of PhiX (assuming it's used as a control by your sequencing facility) and host DNA (in the case of this tutorial, _Homo sapiens_) being removed.
 
-The host DNA removed metrics should be particularly paid close attenion to, to ensure that you don't result in broken and/or chimeric contigs containing host DNA that can match contaminated reference genomes during taxonomic classification of contigs (Recommendation 4 of Box 1 of Fellows Yates et al. 2026).
+The host DNA removed metrics should be particularly paid close attention to, to ensure that it doesn't result in broken and/or chimeric contigs containing host DNA that can match contaminated reference genomes during taxonomic classification of contigs (Recommendation 4 of Box 1 of Fellows Yates et al. 2026).
 
 The exact amount will depend on the sample type, and sequencing depth.
 If you expected to see more, you should review your settings to ensure you have set alignment parameters suitable for aligning ultra-short DNA sequences (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
 In the case of the tutorial, no PhiX spike-in was used during sequencing of the ECO004 libraries, and only a very small amount of Human DNA is expected (primarily from modern DNA contamination during handling), as the sample type is from dental calculus, which is primarily a microbial biofilm that forms on the surface of teeth - rather than being a human tissue itself.
 
-![MultiQC plot of the Bowtie 2: PE Alignment Scores from Bowtie2 alignment against the human reference genome. The vast majority of reads are not aligned, representing non-host reads as expected from ancient dental calculus samples that are mineralised microbial biofilms. The mapped reads have been removed to reduce the risk of incorporating contamination into the assembly contigs.](assets/fastp-insert-size-plot.png)
+![MultiQC plot of the Bowtie 2: PE Alignment Scores from Bowtie2 alignment against the human reference genome. The vast majority of reads are not aligned, representing non-host reads as expected from ancient dental calculus samples that are mineralised microbial biofilms. The mapped reads have been removed to reduce the risk of incorporating contamination into the assembly contigs.](assets/bowtie2_pe_plot-1.png)
 
 #### QUAST (assemblies)
 
@@ -445,7 +441,7 @@ We can already get a rough idea of the ratio of short to long contigs by looking
 
 In this plot we can see the largest proportion of contigs are spanning a length of 0-1000 bp, whereas long contigs >1000 bp represent a very small proportion of the assembly (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
 
-This infact represents a good indicator of an reasonable assembly of ancient DNA data, as short reads will not fragment well.
+This in fact represents a good indicator of a reasonable assembly of ancient DNA data, as short reads will not fragment well.
 This plot also demonstrates the important effects of sequencing depth in ancient DNA samples to mitigate the short reads, where the deep sequenced ERR357932 library retrieves a much larger number of longer contigs compared to the two shallow sequenced libraries (Recommendation 2 of Box 1 of Fellows Yates et al. 2026)
 
 ### Binning evaluation
@@ -464,12 +460,13 @@ This makes it easier to cross compare across all metrics, but also easier to fil
 In our example runs, we will find the following metrics:
 
 - Mapping fold-coverage depths
-- `checkm` results for
+- `checkm` results for # COMMENT: I guess you still want to specify what these are for, right?
 - `quast` (at bin level) for
 - `gtdbtk` results for
 - `pydamage` results for
 
-Note that the the `gunc` statistics are currently integrated by the bin summary table generation script, and must be evaluated separately.
+# COMMENT: is this still true?
+Note that the `gunc` statistics are currently integrated by the bin summary table generation script, and must be evaluated separately.
 
 #### Depth coverage
 
@@ -489,7 +486,7 @@ This column can be used for reporting against the 'Completeness' and 'Contaminat
 | Medium Quality Draft | >50%               | <10%                |
 | Low Quality Draft    | <50%               | <10%                |
 
-If we inspect the elevant columns of our pre-made example table (`execution-cli`):
+If we inspect the relevant columns of our pre-made example table (`execution-cli`):
 
 | Bin Id_checkm                             | Marker lineage_checkm              | Completeness_checkm | Contamination_checkm | Partial MIMAG Assesment |
 | ----------------------------------------- | ---------------------------------- | ------------------- | -------------------- | ----------------------- |
@@ -534,18 +531,18 @@ As with the assemblise, we can use these the number of contigs at different leng
 | MEGAHIT-COMEBinRefined-ERR3579732.7688.fa    | 306                        | 306                           | 83                            | 13                             | 0                              | 0                              |
 | MEGAHIT-CONCOCTRefined-ERR3579732.18_sub.fa  | 1215                       | 1215                          | 51                            | 17                             | 2                              | 0                              |
 
-We again see the pattern already in seen in the assemblies, that number of shorter 0-1000 bp contigs, greatly outnumber the number of longer contigs >1000 bp (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+We again see the pattern that we already have seen in the assemblies: shorter 0-1000 bp contigs greatly outnumber the number of longer contigs >1000 bp (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
 
-As before, this can be an initial indicator of good ancient bin, when combined completeness and comtamination scores (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
+As before, this can be an initial indicator of good ancient bin, when combined completeness and contamination scores (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
-Other standard metagenomic \_de novo assembly metrics can be assessed here such as the a low number contigs but with a total length reaching that expected of microbial genomes.
-Other metrics include N50 (where a larger number the better - as this represents the longest contig representing at the point you covering 50% of the length of the assembly) and L50 (where the lower the number the better - as this represents the number of contigs you need to reach 50% of the total length assembly).
+Other standard metagenomic \_de novo assembly metrics can be assessed here such as the low number contigs but with a total length reaching that expected of microbial genomes.
+Other metrics include N50 (where the larger number the better - as this represents the longest contig representing at the point you covering 50% of the length of the assembly) and L50 (where the lower the number the better - as this represents the number of contigs you need to reach 50% of the total length assembly).
 All these metrics also fall under the specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)), under the 'Assembly quality' section that expects more contiguous assemblies (fewer numbers of long contigs) for higher quality bins.
 
 #### GTDBTk
 
-Another useful bit of information when attempting to build bacterial or archaeal MAGs is whether your bins are novel or not.
-This information can be provided by the GTDBTk columns, that indicate similarity of each of your bins to known species using phylogenomically informative marker genes.
+Another useful bit of information when attempting to build bacterial or archaeal MAGs is whether your bins have been previously observed or are novel.
+This information can be provided by the GTDBTk columns, that indicate the similarity of each of your bins to known species using phylogenomically informative marker genes.
 
 As noted in Fellows Yates et al. 2026, it is important to cross-reference the GDTB-Tk results with the output of chimerism checks from GUNC.
 Due to the larger number of shorter contigs in ancient DNA bins, there is a greater chance of chimeric bins which will mean that GTDB-Tk will be unable to reliably taxonomic classify the bin.
@@ -566,7 +563,7 @@ Therefore nf-core/mag produces these metrics firstly by aligning the input reads
 nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, that applies a statistical model to assess the probability that the C to T deamination patterns matches the distribution expected of typical ancient DNA molecules.
 
 By default pyDamage produces such metrics on a per-contig basis.
-To summarise this at bin level, it takes the approach of Hübner et al. (???? <!-- TODO: Alex, reference for this? -->), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metic is made.
+To summarise this at bin level, it takes the approach of Klapper, Hübner, Ibrahim et al. (2023), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metic is made.
 
 These aggregated median values are then displayed in the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) to allow you to evaluate whether a bin displays sufficiently represented C to T deamination ancient DNA damage patterns.
 
@@ -586,13 +583,13 @@ An example can be seen below, with the most useful columns for getting a rough o
 | MEGAHIT-COMEBinRefined-ERR3579732.7688.fa    | 0.25                            | 1                   | 881.5                         | 0                   | 0                   | 0                   | 0                   | 0                   | 0                   |
 | MEGAHIT-CONCOCTRefined-ERR3579732.18_sub.fa  | 0.22                            | 1                   | 229                           | 0                   | 0                   | 0                   | 0                   | 0                   | 0                   |
 
-As a rough rule, you can evalute these with:
+As a rough rule, you can evaluate these with:
 
 - `predicated_accuracy_pydamage_bins`: ideally be >50% (0.5), representing there was sufficient data to compare with the model predictions
 - `qvalue_pydamagebins`: ideally be < 0.05 (or your preferred significance cut off), representing the confidence that probability that the damage model would be matched by chance under null model
 
 These values provide you an easy score to filter bins by.
-However, the most 'classical' method of evaluating the presence of the 'correct' behaviour of damage, is to look for an inverted expotential curve of the frequency of C to T deamination from read termini to the middle.
+However, the most 'classical' method of evaluating the presence of the 'correct' behaviour of damage, is to look for an inverted exponential curve of the frequency of C to T deamination from read termini to the middle.
 
 This can also be roughly evaluated within the pyDamage columns of the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) with the `CtoT-<n>_pydamagebins` columns.
 
@@ -614,10 +611,10 @@ Other recommended evaluations of your ancient DNA assemblies not included in the
 
 #### GUNC
 
-Ultra short reads that are harder to assemble together, increases the risk of more fragmented assemblies where contigs from two different organisms can be accidently mixed together, as there is nothing to span the gaps between actually related contigs.
+Ultra short reads that are harder to assemble together, increases the risk of more fragmented assemblies where contigs from two different organisms can be accidentally mixed together, as there is nothing to span the gaps between actually related contigs.
 Therefore during assembly of ancient DNA samples, you should always evaluate the presence of chimeric bins (Recommendation 9 of Box 1 of Fellows Yates et al. 2026).
 
-nf-core/mag includes GUNC for estimating chimerism and contamination, with the [`results/GenomeBinning/QC/gunc_checkm_summary.tsv`](data/premade_mag_results/execution-cli/gunc_checkm_summary.tsv) table convientntly combining both the CheckM and GUNC results to give estimation of whether each bin passes each type of MIMAG criteria!
+nf-core/mag includes GUNC for estimating chimerism and contamination, with the [`results/GenomeBinning/QC/gunc_checkm_summary.tsv`](data/premade_mag_results/execution-cli/gunc_checkm_summary.tsv) table conveniently combining both the CheckM and GUNC results to give estimation of whether each bin passes each type of MIMAG criteria!
 
 A subset of the columns can be seen here:
 
@@ -693,7 +690,7 @@ It's important to reiterate that the medium- and lower-quality MAGs should still
 Depending on your use case, lower-quality MAGs may represent sufficiently high quality for certain analyses, and other methods (such as phylogenomic positioning) can indicate an ancient genome in the absence of damage.
 
 In this case, mapping the shallowly sequenced non-UDG (retaining damage) library reads against the deep sequenced full-UDG (damaged removed), may help further identify more bins that in fact are likely ancient.
-Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement.
+Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement (see Klapper, Hübner, Ibrahim et al. (2023) for example).
 
 ## Clean up
 
