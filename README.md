@@ -291,7 +291,7 @@ nextflow run nf-core/mag \
 > If you get an error message of `ERROR ~ /analysis`, check that the `$TUTORIAL_DIR environment variable is set correctly.
 
 Note that we have set a lower DAS Tool bin refinement threshold score than the default in nf-core/mag.
-Following recommendation 7 and 11 of Box 1 of Fellows Yates et al. 2026, we reduce the score to account for the expected 'lower quality' of bins due to higher the fragmentation of the assemblies due to the very short reads.
+Following recommendation 7 and 11 of Box 1 of Fellows Yates et al. 2026, we reduce the score to account for the expected 'lower quality' of bins due to the higher fragmentation of the assemblies due to the very short reads.
 Furthermore, we have set a minimum contig length to 500 (Recommendation 8 of Box 1 of Fellows Yates et al. 2026), to remove ultra-short contigs which due to the fragmentation are expected to be present at high numbers and will greatly slow down the pipeline without much downstream analytical value.
 The specific thresholds will however depend on the aims of the project, and the quality of data and is not necessarily generalisable to all contexts.
 
@@ -346,7 +346,7 @@ nextflow run nf-core/mag \
 ```
 
 > [!TIP]
-> Using a `params.json` also helps promotes reproducible science, allowing yourself but also other researchers to reproduce your results without risk of typo-derived errors!
+> Using a `params.json` also helps promote reproducible science, allowing yourself but also other researchers to reproduce your results without risk of typo-derived errors!
 >
 > We recommend using the JSON method for supplying parameters, and include this file as supplementary data in your publications (make sure not to include file paths, however - these should stay on the command line!).
 
@@ -412,7 +412,7 @@ As a general rule, evaluating the fastp results follows typical NGS sequencing q
 
 You should see a general improvement in the reduction of N content and sequencing quality.
 
-As with FastQC, the 'insert Size Distribution' section can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
+As with FastQC, the 'Insert Size Distribution' section can give you an indication of the presence of 'true' fragmented aDNA reads, with an expected peak - in this case of the ECO004 libraries around 30-40 bp.
 
 ![MultiQC plot of the Insert Size Distribution plot from fastp, with a distinct peak starting at 30 bp indicating the presence of likely ancient DNA sequences. The sharp start is due to the read-filtering settings executed during the nf-core/mag run.](assets/fastp-insert-size-plot.png)
 
@@ -437,7 +437,7 @@ We can finally use the MultiQC report to do an initial evaluation of the assembl
 
 We can already get a rough idea of the ratio of short to long contigs by looking at the 'QUAST: assembly's 'Number of Contigs' stacked bar plot.
 
-![MultiQC plot of the QUAST 'Number of Contigs' metrics for assemblies. The large proportion of shorter contigs (0-1000bp) over long contigs, is a paradoxical good indicator for a succesful assembly of ancient DNA reads, as very short reads are expected to assemble poorly resulting in fragmented sequences](assets/quast_num_contigs.png)
+![MultiQC plot of the QUAST 'Number of Contigs' metrics for assemblies. The large proportion of shorter contigs (0-1000bp) over long contigs, is a paradoxical good indicator for a successful assembly of ancient DNA reads, as very short reads are expected to assemble poorly resulting in fragmented sequences](assets/quast_num_contigs.png)
 
 In this plot we can see the largest proportion of contigs are spanning a length of 0-1000 bp, whereas long contigs >1000 bp represent a very small proportion of the assembly (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
 
@@ -450,7 +450,7 @@ While we could continue using the MultiQC report for evaluating the bins, not al
 Furthermore, it can be easier to evaluate when all metrics from one sample are in the same place, rather than split over multiple plots.
 
 nf-core/mag generates a custom `bin_summary.tsv` table that combines all relevant metrics useful for evaluating all the final MAGs in one place.
-This makes it easier to cross compare across all metrics, but also easier to filter when you have a large numbers of bins.
+This makes it easier to cross compare across all metrics, but also easier to filter when you have a large number of bins.
 
 > [!NOTE]
 > If you have not executed the pipeline or still waiting for it to finish, you can find already made files in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/bin_summary.tsv).
@@ -475,7 +475,7 @@ This column can be used for reporting against the MIMAG reporting criteria ([Bow
 
 #### CheckM
 
-The integration of CheckM within nf-core/mag allows us to estimate Completeness and Contamination scores of bacterial and archael bins, based on lineage-specific marker genes.
+The integration of CheckM within nf-core/mag allows us to estimate Completeness and Contamination scores of bacterial and archaeal bins, based on lineage-specific marker genes.
 
 This column can be used for reporting against the 'Completeness' and 'Contamination' specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)).
 
@@ -487,19 +487,19 @@ This column can be used for reporting against the 'Completeness' and 'Contaminat
 
 If we inspect the relevant columns of our pre-made example table (`execution-cli`):
 
-| Bin Id_checkm                             | Marker lineage_checkm              | Completeness_checkm | Contamination_checkm | Partial MIMAG Assesment |
-| ----------------------------------------- | ---------------------------------- | ------------------- | -------------------- | ----------------------- |
-| MEGAHIT-SemiBin2Refined-ERR3579732.4      | p\_\_Euryarchaeota (UID3)          | 95.03               | 2                    | High                    |
-| MEGAHIT-SemiBin2Refined-ERR3579732.61     | o\_\_Clostridiales (UID1120)       | 91.84               | 0.35                 | High                    |
-| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub | c\_\_Betaproteobacteria (UID3888)  | 72.77               | 4.14                 | Medium                  |
-| MEGAHIT-COMEBinRefined-ERR3579732.5758    | o\_\_Actinomycetales (UID2012)     | 62.22               | 3.66                 | Medium                  |
-| MEGAHIT-SemiBin2Refined-ERR3579731.1      | o\_\_Clostridiales (UID1120)       | 57.53               | 1.87                 | Medium                  |
-| MEGAHIT-SemiBin2Refined-ERR3579732.1      | c\_\_Bacilli (UID285)              | 53.95               | 5.59                 | Medium                  |
-| MEGAHIT-SemiBin2Refined-ERR3579732.11     | k\_\_Bacteria (UID3187)            | 52.93               | 8.1                  | Medium                  |
-| MEGAHIT-COMEBinRefined-ERR3579732.7247    | o\_\_Burkholderiales (UID4000)     | 38.44               | 1                    | Low                     |
-| MEGAHIT-SemiBin2Refined-ERR10114849.3     | o\_\_Clostridiales (UID1120)       | 34.97               | 0.73                 | Low                     |
-| MEGAHIT-COMEBinRefined-ERR3579732.7688    | o\_\_Burkholderiales (UID4105)     | 32.66               | 0.5                  | Low                     |
-| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub  | c\_\_Gammaproteobacteria (UID4267) | 19.03               | 2.37                 | Low                     |
+| Bin Id_checkm                             | Marker lineage_checkm              | Completeness_checkm | Contamination_checkm | Partial MIMAG Assessment |
+| ----------------------------------------- | ---------------------------------- | ------------------- | -------------------- | ------------------------ |
+| MEGAHIT-SemiBin2Refined-ERR3579732.4      | p\_\_Euryarchaeota (UID3)          | 95.03               | 2                    | High                     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.61     | o\_\_Clostridiales (UID1120)       | 91.84               | 0.35                 | High                     |
+| MEGAHIT-SemiBin2Refined-ERR3579732.17_sub | c\_\_Betaproteobacteria (UID3888)  | 72.77               | 4.14                 | Medium                   |
+| MEGAHIT-COMEBinRefined-ERR3579732.5758    | o\_\_Actinomycetales (UID2012)     | 62.22               | 3.66                 | Medium                   |
+| MEGAHIT-SemiBin2Refined-ERR3579731.1      | o\_\_Clostridiales (UID1120)       | 57.53               | 1.87                 | Medium                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.1      | c\_\_Bacilli (UID285)              | 53.95               | 5.59                 | Medium                   |
+| MEGAHIT-SemiBin2Refined-ERR3579732.11     | k\_\_Bacteria (UID3187)            | 52.93               | 8.1                  | Medium                   |
+| MEGAHIT-COMEBinRefined-ERR3579732.7247    | o\_\_Burkholderiales (UID4000)     | 38.44               | 1                    | Low                      |
+| MEGAHIT-SemiBin2Refined-ERR10114849.3     | o\_\_Clostridiales (UID1120)       | 34.97               | 0.73                 | Low                      |
+| MEGAHIT-COMEBinRefined-ERR3579732.7688    | o\_\_Burkholderiales (UID4105)     | 32.66               | 0.5                  | Low                      |
+| MEGAHIT-CONCOCTRefined-ERR3579732.18_sub  | c\_\_Gammaproteobacteria (UID4267) | 19.03               | 2.37                 | Low                      |
 
 Of our bins we have:
 
@@ -514,7 +514,7 @@ These medium quality MAGs should still be explored however, as they may still be
 
 As with the assembly metrics, we can use the QUAST columns to evaluate the quality of bins using standard assembly metrics (N50,largest contig, length etc.).
 
-As with the assemblise, we can use these the number of contigs at different lengths to estimate.
+As with the assemblies, we can use the number of contigs at different lengths to estimate the ratio of short to long contigs.
 
 | Assembly_quast                               | # contigs (>= 0 bp)\_quast | # contigs (>= 1000 bp)\_quast | # contigs (>= 5000 bp)\_quast | # contigs (>= 10000 bp)\_quast | # contigs (>= 25000 bp)\_quast | # contigs (>= 50000 bp)\_quast |
 | -------------------------------------------- | -------------------------- | ----------------------------- | ----------------------------- | ------------------------------ | ------------------------------ | ------------------------------ |
@@ -530,7 +530,7 @@ As with the assemblise, we can use these the number of contigs at different leng
 | MEGAHIT-COMEBinRefined-ERR3579732.7688.fa    | 306                        | 306                           | 83                            | 13                             | 0                              | 0                              |
 | MEGAHIT-CONCOCTRefined-ERR3579732.18_sub.fa  | 1215                       | 1215                          | 51                            | 17                             | 2                              | 0                              |
 
-We again see the pattern that we already have seen in the assemblies: shorter 0-1000 bp contigs greatly outnumber the number of longer contigs >1000 bp (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
+We again see the pattern that we already saw in the assemblies: shorter 0-1000 bp contigs greatly outnumber the number of longer contigs >1000 bp (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
 
 As before, this can be an initial indicator of good ancient bin, when with combined completeness and contamination scores (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
@@ -555,11 +555,11 @@ To further verify the identification of the bins present in the assembly, you ca
 
 So far, most of the metrics evaluated have been generally applicable for any bin of any age - modern or ancient.
 
-One of the most accepted method of validating ancient sequences is through the presence of characteristic DNA damage (Recommendation 12 of Box 1 of Fellows Yates et al. 2026).
-This is most commonly through demonstrated through showing the presence of elevated C to T deaminations at read termini (see [Orlando 2021 Nat. Reviews](https://doi.org/10.1038/s43586-020-00011-0) for a review).
+One of the most accepted methods of validating ancient sequences is through the presence of characteristic DNA damage (Recommendation 12 of Box 1 of Fellows Yates et al. 2026).
+This is most commonly demonstrated through showing the presence of elevated C to T deaminations at read termini (see [Orlando 2021 Nat. Reviews](https://doi.org/10.1038/s43586-020-00011-0) for a review).
 Such metrics are generated through alignment of reads against a reference genome, where statistics on variants away from the reference genome summarised across all reads can be picked up.
 Therefore nf-core/mag produces these metrics firstly by aligning the input reads to the assembly against the FASTA file of each bin.
-nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, that applies a statistical model to assess the probability that the C to T deamination patterns matches the distribution expected of typical ancient DNA molecules.
+nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, which applies a statistical model to assess the probability that the C to T deamination patterns match the distribution expected of typical ancient DNA molecules.
 
 By default pyDamage produces such metrics on a per-contig basis.
 To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
@@ -595,10 +595,10 @@ This can also be roughly evaluated within the pyDamage columns of the [`bin_summ
 This is nicely demonstrated in the table above, where if we compare the library build metadata of the multiple sequencing libraries from the same sample (ECO004) from the with their pyDamage results:
 
 - Bin `MEGAHIT-SemiBin2Refined-ERR3579731.1.fa` (where library `ERR3579731` had no damage treatment applied) has a predicted accuracy of 100 (`1`) and a _q_ value of `0`, and we see a decrease in the frequency of C to T from `0.529`, `0.368`, `0.233` etc.
-- Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elavated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015](https://doi.org/10.1098/rstb.2013.0624))
-- Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevanted frequency (<0.0009 at it's peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment.
+- Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elevated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015](https://doi.org/10.1098/rstb.2013.0624))
+- Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevated frequencies (<0.0009 at its peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment.
 
-It is important to know that for all of these pyDamgge metrics, we should always interpret them in the context of the number of reads (`nb_reads_aligned_pydamagebins`).
+It is important to know that for all of these pyDamage metrics, we should always interpret them in the context of the number of reads (`nb_reads_aligned_pydamagebins`).
 The lower the number of reads being used to inform the statistical test, the weaker the reliability of the results will be.
 A good rule of thumb is that the results of bins with less than a median of 1000 reads should be interpreted with caution.
 
@@ -634,7 +634,7 @@ A subset of the columns can be seen here:
 As a general rule, you want low 'Clade separate scores' (CSS - where detected genes fall in different clades of reference genomes) and high 'Reference representation scores' (RRS).
 
 When looking at the two MIMAG criteria columns, we can see we correctly estimated from the CheckM results previously that we have 2 high-quality MAGs, and 5 medium-quality MAGs.
-However GUNC reject four of these medium- and high-quality MAGs due to high CSS scores indicating a certain level of chimerism in the resulting bins.
+However GUNC rejects four of these medium- and high-quality MAGs due to high CSS scores indicating a certain level of chimerism in the resulting bins.
 
 ## Conclusion
 
@@ -689,7 +689,7 @@ It's important to reiterate that the medium- and lower-quality MAGs should still
 Depending on your use case, lower-quality MAGs may represent sufficiently high quality for certain analyses, and other methods (such as phylogenomic positioning) can indicate an ancient genome in the absence of damage.
 
 In this case, mapping the shallowly sequenced non-UDG (retaining damage) library reads against the deep sequenced full-UDG (damaged removed), may help further identify more bins that in fact are likely ancient.
-Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement (see [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA) for example).
+Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classification and manual refinement (see [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA) for example).
 
 ## Clean up
 
