@@ -215,7 +215,6 @@ sed "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDi
 sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
 
-# COMMENT: This should be fixed in amdirt v1.7.1, shouldn't it?
 
 ## Pipeline setup and run
 
