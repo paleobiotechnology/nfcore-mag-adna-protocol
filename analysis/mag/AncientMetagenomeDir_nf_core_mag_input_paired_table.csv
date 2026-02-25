@@ -1,4 +1,4 @@
-sample,group,short_reads_1,short_reads_2,longs_reads
-ERR3579731,ERS3774460,ERR3579731_1.fastq.gz,ERR3579731_2.fastq.gz,
-ERR3579732,ERS3774460,ERR3579732_1.fastq.gz,ERR3579732_2.fastq.gz,
-ERR10114849,ERS3774460,ERR10114849_1.fastq.gz,ERR10114849_2.fastq.gz,
+sample,group,short_reads_1,short_reads_2,longs_reads,short_reads_platform,long_reads_platform
+ERR3579731,ERS3774460,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR3579731_1.fastq.gz,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR3579731_2.fastq.gz,,ILLUMINA,
+ERR3579732,ERS3774460,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR3579732_1.fastq.gz,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR3579732_2.fastq.gz,,ILLUMINA,
+ERR10114849,ERS3774460,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR10114849_1.fastq.gz,/home/james_fellows_yates/james_fellows_yates/mag/nfcore-mag-adna-protocol/data/raw_data/ERR10114849_2.fastq.gz,,ILLUMINA,
