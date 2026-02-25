@@ -100,14 +100,6 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-   > [!TIP]
-   > If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
-   > While _within_ the GUNC conda environment, run the following command:
-   >
-   > ```bash
-   > conda install -c conda-forge setuptools
-   > ```
-
 2. Download databases for each tool into cache directory
    - GTDB:
 
@@ -119,7 +111,7 @@ This tutorial assumes you have:
      ```
 
      > [!WARNING]
-     > This is very large >110GB and take a long time to download.
+     > This is very large >110GB and takes a long time to download.
      > We recommend re-using an already downloaded database if possible.
      > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
      >
@@ -139,7 +131,7 @@ This tutorial assumes you have:
 ## Example data retrieval
 
 For the purposes of this tutorial, we will use an Iberian ancient human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
-This sample was analysed in a study to reconstruct the taxonomic profiles of ancient oral microbiomes from in ancient hominins.
+This sample was analysed in a study to reconstruct the taxonomic profiles of ancient oral microbiomes of ancient hominins.
 
 From this sample three libraries have been generated and sequenced across three sequencing runs.
 All three were built into a double stranded library with the PfuTurbo Cx Hotstart DNA polymerase that is tolerant of ancient DNA damage and sequenced on the Illumina NextSeq 500 platform.
@@ -150,7 +142,7 @@ All three were built into a double stranded library with the PfuTurbo Cx Hotstar
 | ECO004.B    | ECO004.B0103.SG1.1 | ENA     | PRJEB34569      | ERS3774460               | ERR3579732             | double      | PfuTurbo Cx Hotstart DNA | full-udg          | NextSeq 500      | PAIRED         | 67,123,133 |
 | ECO004.B    | ECO004.B0102       | ENA     | PRJEB55583      | ERS3774460               | ERR10114849            | double      | PfuTurbo Cx Hotstart DNA | half-udg          | NextSeq 500      | PAIRED         | 21,007,806 |
 
-The primary difference between the three libraries is each have different 'UDG' treatment applied, that removes increasingly more damage from the DNA molecules, and the sequencing depth.
+The primary difference between the three libraries is each have a different 'UDG' treatment applied, that removes increasingly more damage from the DNA molecules, and the sequencing depth.
 The two shallow-sequenced libraries had no or only partial damage removal, whereas the deeper sequenced library had full-UDG treatment and thus has had all damage removed.
 
 We can retrieve the raw sequencing data and prepared input sheets from via the tool `amdirt` ([Borry et al. 2024, F1000Research](https://doi.org/10.12688/f1000research.134798.2)) from the European Nucleotide Archive (ENA).
@@ -213,7 +205,7 @@ sed "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDi
 sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
 ```
 
-We will also need to do a little but of repair work because `amdirt` currently supports an older version of nf-core/mag
+We will also need to do a little bit of repair work because `amdirt` currently supports an older version of nf-core/mag
 
 ```bash
 sed -i "s/group,/group,short_reads_platform,/g" analysis/mag/AncientMetagenomeDir_nf_core_mag_input_paired_table.csv
@@ -229,14 +221,13 @@ We also exclude unbinned contigs from post-binning to reduce run time.
 
 We will then tweak some relevant parameters that should be adjusted due to the nature of ancient DNA samples, such as setting a short minimum read length, host genome to GRCh37 for host DNA removal, as well as removing contigs less than 500 bp (which we expect many of because of the fragmented nature of aDNA).
 
-We will also run co-assembly as we have three related libraries from the same sample.
-
 Finally we also run `--ancient_dna` for automatic setting of suitable short-read-to-contig mapping parameters, damage authentication with pyDamage, and damage correction with freeBayes.
 
 > [!WARNING]
-> This command or `params.yml` method of configuration assumes you are running on a server with internet access, and specifically to the public AWS iGenome bucket for downloading pre-made host genome indices
+> This command or `params.yml` method of configuration assumes you are running on a server with internet access, and specifically to the public AWS iGenome bucket for downloading pre-made host genome indices.
+>
 > If you do not have internet access, you will need to download the host genome indices yourself, and specify the path to the local genome FASTA file with the `--host_fasta` parameter.
-> Furthermore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the a directory containing bowtie2 index files of the genome.
+> Furthermore, if you have pre-built indices of the genome, you can additionally specify the `--host_fasta_bowtie2index` parameter to point to the directory containing bowtie2 index files of the genome.
 
 ### The CLI way
 
@@ -463,10 +454,10 @@ This makes it easier to cross compare across all metrics, but also easier to fil
 In our example runs, we will find the following metrics:
 
 - Mapping fold-coverage depths
-- `checkm` results for
-- `quast` (at bin level) for
-- `gtdbtk` results for
-- `pydamage` results for
+- `checkm` results for bin contamination and completeness metrics
+- `quast` (at bin level) for typical assembly quality metrics (longest contig, N50, etc.)
+- `gtdbtk` results for bin-level taxonomic classification
+- `pydamage` results for ancient DNA damage statistics
 
 Note that the the `gunc` statistics are currently integrated by the bin summary table generation script, and must be evaluated separately.
 
