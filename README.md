@@ -460,13 +460,12 @@ This makes it easier to cross compare across all metrics, but also easier to fil
 In our example runs, we will find the following metrics:
 
 - Mapping fold-coverage depths
-- `checkm` results for # COMMENT: I guess you still want to specify what these are for, right?
+- `checkm` results for
 - `quast` (at bin level) for
 - `gtdbtk` results for
 - `pydamage` results for
 
-# COMMENT: is this still true?
-Note that the `gunc` statistics are currently integrated by the bin summary table generation script, and must be evaluated separately.
+Note that the `gunc` statistics are not currently integrated by the bin summary table generation script, and must be evaluated separately.
 
 #### Depth coverage
 
@@ -533,7 +532,7 @@ As with the assemblise, we can use these the number of contigs at different leng
 
 We again see the pattern that we already have seen in the assemblies: shorter 0-1000 bp contigs greatly outnumber the number of longer contigs >1000 bp (Recommendation 10 of Box 1 of Fellows Yates et al. 2026).
 
-As before, this can be an initial indicator of good ancient bin, when combined completeness and contamination scores (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
+As before, this can be an initial indicator of good ancient bin, when with combined completeness and contamination scores (Recommendation 2 of Box 1 of Fellows Yates et al. 2026).
 
 Other standard metagenomic \_de novo assembly metrics can be assessed here such as the low number contigs but with a total length reaching that expected of microbial genomes.
 Other metrics include N50 (where the larger number the better - as this represents the longest contig representing at the point you covering 50% of the length of the assembly) and L50 (where the lower the number the better - as this represents the number of contigs you need to reach 50% of the total length assembly).
@@ -563,7 +562,7 @@ Therefore nf-core/mag produces these metrics firstly by aligning the input reads
 nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, that applies a statistical model to assess the probability that the C to T deamination patterns matches the distribution expected of typical ancient DNA molecules.
 
 By default pyDamage produces such metrics on a per-contig basis.
-To summarise this at bin level, it takes the approach of Klapper, Hübner, Ibrahim et al. (2023), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metic is made.
+To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
 
 These aggregated median values are then displayed in the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) to allow you to evaluate whether a bin displays sufficiently represented C to T deamination ancient DNA damage patterns.
 
@@ -690,7 +689,7 @@ It's important to reiterate that the medium- and lower-quality MAGs should still
 Depending on your use case, lower-quality MAGs may represent sufficiently high quality for certain analyses, and other methods (such as phylogenomic positioning) can indicate an ancient genome in the absence of damage.
 
 In this case, mapping the shallowly sequenced non-UDG (retaining damage) library reads against the deep sequenced full-UDG (damaged removed), may help further identify more bins that in fact are likely ancient.
-Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement (see Klapper, Hübner, Ibrahim et al. (2023) for example).
+Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classificaiton and manual refinement (see [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA) for example).
 
 ## Clean up
 
