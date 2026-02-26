@@ -1,6 +1,8 @@
 # nf-core/mag protocol supplement
 
-This is a complementary step by step guide with explicit commands for running nf-core/mag for ancient metagenomes.
+[![DOI](https://zenodo.org/badge/938730888.svg)](https://doi.org/10.5281/zenodo.18769828)
+
+This is a complementary step-by-step guide to Fellows Yates et al. (2026, in preparation) with explicit commands for running nf-core/mag for ancient metagenomes.
 
 ## Requirements
 
