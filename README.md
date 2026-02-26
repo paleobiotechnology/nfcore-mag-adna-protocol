@@ -124,7 +124,7 @@ This tutorial assumes you have:
   ```
 
   > [!WARNING]
-  > This is very large >110GB and takes a long time to download.
+  > This is very large >110GB file, and it takes a long time to download.
   > We recommend re-using an already downloaded database if possible.
   > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
   >
@@ -143,7 +143,7 @@ This tutorial assumes you have:
 
 ## Example data retrieval
 
-For the purposes of this tutorial, we will use an Iberian ancient human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
+For the purposes of this tutorial, we will use an ancient Iberian human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
 This sample was analysed in a study to reconstruct the taxonomic profiles of ancient oral microbiomes of ancient hominins.
 
 From this sample three libraries have been generated and sequenced across three sequencing runs.
@@ -377,7 +377,7 @@ To firstly evaluate the raw data (assuming not already performed prior running n
 > [!NOTE]
 > If you have not executed the pipeline or still waiting for it to finish, you can find already made files in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/multiqc_report.html).
 >
-> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins between the two execution methods (however high-quality bins will be present in both)
+> It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences the names, and in the number of lower quality bins, between the two execution methods.
 
 In the MultiQC report, the primary sections you will want to evaluate are:
 
