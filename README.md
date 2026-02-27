@@ -102,20 +102,6 @@ This tutorial assumes you have:
    cd $TUTORIAL_DIR/
    ```
 
-# <<<<<<< HEAD
-
-> [!TIP]
-> If you get errors about `ModuleNotFoundError: No module named 'pkg_resources'`
-> While _within_ the GUNC conda environment, run the following command:
->
-> # COMMENT: I think we have to pin the version of setuptools to 75 because with the later ones it complained to me that pkg_resources is deprecated and should be changed to use a different Python package
->
-> ```bash
-> conda install -c conda-forge setuptools=75
-> ```
-
-> > > > > > > ea3654505dc510d8a14db97a66f90c22fa53440f 2. Download databases for each tool into cache directory
-
 - GTDB:
 
   ```bash
@@ -190,8 +176,6 @@ done
 
 We can then convert these samplesheets using `amdirt` to different files for preparing the input for nf-core/mag.
 
-<!-- TODO RETEST ON CLUSTER -->
-
 ```bash
 ## Raw data
 amdirt convert --libraries $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_libraries_v25.12.0_filtered.tsv -o data/raw_data --curl $TUTORIAL_DIR/data/amdirt/ancientmetagenome-hostassociated_samples_v25.12.0_filtered.tsv ancientmetagenome-hostassociated
@@ -225,7 +209,7 @@ sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenom
 There are multiple different ways to specify nf-core/mag parameters, we'll highlight the two main ones.
 
 For preparing our command we will skip a few steps that are not necessary for the purposes of this tutorial for reasons of speed, such as skipping metaeuk (can be slow, for eukaryotic contig detection), SPAdes (which is very slow and requires large amounts of computational resources), and Prodigal annotation (which will instead be performed at the bin level with Prokka).
-We also exclude unbinned contigs from post-binning to reduce run time.
+We also exclude unbinned contigs from post-binning to reduce run time, and use the older CheckM version as it is the most routinely and established tool (however CheckM2 will mostly likely perform better on a wider range of bacteria and archaea)
 
 We will then tweak some relevant parameters that should be adjusted due to the nature of ancient DNA samples, such as setting a short minimum read length, host genome to GRCh37 for host DNA removal, as well as removing contigs less than 500 bp (which we expect many of because of the fragmented nature of aDNA).
 
@@ -478,6 +462,10 @@ This column can be used for reporting against the MIMAG reporting criteria ([Bow
 #### CheckM
 
 The integration of CheckM within nf-core/mag allows us to estimate Completeness and Contamination scores of bacterial and archaeal bins, based on lineage-specific marker genes.
+
+> [!NOTE]
+> If it is particularly important for your data to recover genomes from phyla with reduced genome sizes, such as from Patescibacteria, it is strongly recommended to use CheckM2.
+> This is due to this more recent version of CheckM being able to use additional genomic information outside of just universal marker genes ([Chklovski et al. 2023](https://doi.org/10.1038/s41592-023-01940-w)).
 
 This column can be used for reporting against the 'Completeness' and 'Contamination' specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)).
 
