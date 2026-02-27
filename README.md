@@ -48,8 +48,7 @@ This tutorial assumes you have:
    conda config --set auto_activate_base false
    ```
 
-   > [!NOTE]
-   > Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
+   > ℹ️ Miniforge is the preferred distribution of conda, as it does not come with any restrictive usage licenses as it does not include the Anaconda Inc.'s paid default channel.
 
 3. Exit your terminal, and make a new window. Change back into the tutorial directory.
 
@@ -93,14 +92,14 @@ This tutorial assumes you have:
 1. Make conda environment for tools that require a specific tool to download the database
    - GUNC (`-y` is specified in the conda command to automatically accept proposed dependencies, remove if you wish to check)
 
-   ```bash
-   conda create -y -n gunc -c bioconda gunc=1.0.6
-   conda activate gunc
-   mkdir $TUTORIAL_DIR/cache/database/gunc_db
-   gunc download_db $TUTORIAL_DIR/cache/database/gunc_db
-   conda deactivate
-   cd $TUTORIAL_DIR/
-   ```
+     ```bash
+     conda create -y -n gunc -c bioconda gunc=1.0.6
+     conda activate gunc
+     mkdir $TUTORIAL_DIR/cache/database/gunc_db
+     gunc download_db $TUTORIAL_DIR/cache/database/gunc_db
+     conda deactivate
+     cd $TUTORIAL_DIR/
+     ```
 
 - GTDB:
 
@@ -111,8 +110,7 @@ This tutorial assumes you have:
   cd $TUTORIAL_DIR/
   ```
 
-  > [!WARNING]
-  > This is very large >110GB file, and it takes a long time to download.
+  > ⚠️ This is very large >110GB file, and it takes a long time to download.
   > We recommend re-using an already downloaded database if possible.
   > In this case symlink the `gtdbtk_r226/` directory to the cache directory:
   >
@@ -209,7 +207,7 @@ sed -i "s#,ERR#,$TUTORIAL_DIR/data/raw_data/ERR#g" analysis/mag/AncientMetagenom
 There are multiple different ways to specify nf-core/mag parameters, we'll highlight the two main ones.
 
 For preparing our command we will skip a few steps that are not necessary for the purposes of this tutorial for reasons of speed, such as skipping metaeuk (can be slow, for eukaryotic contig detection), SPAdes (which is very slow and requires large amounts of computational resources), and Prodigal annotation (which will instead be performed at the bin level with Prokka).
-We also exclude unbinned contigs from post-binning to reduce run time, and use the older CheckM version as it is the most routinely and established tool (however CheckM2 will mostly likely perform better on a wider range of bacteria and archaea)
+We also exclude unbinned contigs from post-binning to reduce run time, and use the older CheckM version as it is the most routinely and established tool (however CheckM2 will mostly likely perform better on a wider range of bacteria and archaea).
 
 We will then tweak some relevant parameters that should be adjusted due to the nature of ancient DNA samples, such as setting a short minimum read length, host genome to GRCh37 for host DNA removal, as well as removing contigs less than 500 bp (which we expect many of because of the fragmented nature of aDNA).
 
@@ -241,7 +239,7 @@ Note that a backslash character can be used to break up a long single command in
 
 > [!TIP]
 > Alternatively, replace `-profile conda` with an institutional existing profile e.g. from nf-core/configs or a custom one with -c
-> For example, in the below, we use a custom config file `custom.config` that is located in the same directory as the samplesheet to increase memory requirements for both the CHECKM_LINEAGEWF and GTDBTK_LINEAGEWF steps of the pipeline.
+> For example, in the below, we use a custom config file `custom.config` that is located in the same directory as the samplesheet to increase memory requirements for both the `CHECKM_LINEAGEWF` and `GTDBTK_LINEAGEWF` steps of the pipeline.
 
 ```bash
 nextflow run nf-core/mag \
@@ -291,7 +289,7 @@ Once parameters have been specified, nf-core tools provides a `nf-params.json` t
 
 ![Screenshot of the nf-core-launch page for nf-core/mag 5.4.0, with a few input parameters shown (free text and radio button option ones)](assets/tutorial-figure-launchpage.png)
 
-This is the content of the `nf-params.json` file
+This is the content of the resulting `nf-params.json` file:
 
 ```json
 {
@@ -361,7 +359,8 @@ Otherwise, we can manually explore the raw output from the respective per-tool d
 To firstly evaluate the raw data (assuming not already performed prior running nf-core/mag), preprocessing, and initial assembly, we want to inspect the `multiqc_report.tsv` file.
 
 > [!NOTE]
-> If you have not executed the pipeline or still waiting for it to finish, you can find already made files in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/multiqc_report.html).
+> If you have not executed the pipeline or still waiting for it to finish, you can find already made MultiQC in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/multiqc_report.html).
+> Press the 'Download' button in the top right of the file view, or right click the 'Raw' button and press 'Save Link As...'.
 >
 > It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences the names, and in the number of lower quality bins, between the two execution methods.
 
@@ -440,6 +439,7 @@ This makes it easier to cross compare across all metrics, but also easier to fil
 
 > [!NOTE]
 > If you have not executed the pipeline or still waiting for it to finish, you can find already made files in [`$TUTORIAL_DIR/analysis/premade_mag_results/`](data/premade_mag_results/execution-cli/bin_summary.tsv).
+> Press the 'Download' button in the top right of the file view, or right click the 'Raw' button and press 'Save Link As...'.
 >
 > It does not matter which execution run you look at, however be aware that _binning_ is not 100% deterministic, so you may find a some differences in the number of bins between the two execution methods (however high-quality bins will be present in both)
 
@@ -539,7 +539,7 @@ Due to the larger number of shorter contigs in ancient DNA bins, there is a grea
 To further verify the identification of the bins present in the assembly, you can cross-compare your results with read-based taxonomic classification (such as Kraken2).
 
 > [!TIP]
-> nf-core offers a pipeline to assist in read-base classification with [nf-core/taxprofiler](https://nf-co.re/taxprofiler)
+> nf-core offers a pipeline to assist in read-base classification with [nf-core/taxprofiler](https://nf-co.re/taxprofiler).
 
 #### pyDamage
 
@@ -552,7 +552,7 @@ Therefore nf-core/mag produces these metrics firstly by aligning the input reads
 nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, which applies a statistical model to assess the probability that the C to T deamination patterns match the distribution expected of typical ancient DNA molecules.
 
 By default pyDamage produces such metrics on a per-contig basis.
-To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
+To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023)](https://doi.org/10.1126/science.adf5300), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
 
 These aggregated median values are then displayed in the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) to allow you to evaluate whether a bin displays sufficiently represented C to T deamination ancient DNA damage patterns.
 
@@ -586,7 +586,7 @@ This is nicely demonstrated in the table above, where if we compare the library 
 
 - Bin `MEGAHIT-SemiBin2Refined-ERR3579731.1.fa` (where library `ERR3579731` had no damage treatment applied) has a predicted accuracy of 100 (`1`) and a _q_ value of `0`, and we see a decrease in the frequency of C to T from `0.529`, `0.368`, `0.233` etc.
 - Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elevated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015](https://doi.org/10.1098/rstb.2013.0624))
-- Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevated frequencies (<0.0009 at its peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment.
+- Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevated frequencies (<0.0009 at its peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment
 
 It is important to know that for all of these pyDamage metrics, we should always interpret them in the context of the number of reads (`nb_reads_aligned_pydamagebins`).
 The lower the number of reads being used to inform the statistical test, the weaker the reliability of the results will be.
