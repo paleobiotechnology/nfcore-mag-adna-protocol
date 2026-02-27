@@ -129,7 +129,7 @@ This tutorial assumes you have:
 
 ## Example data retrieval
 
-For the purposes of this tutorial, we will use an ancient Iberian human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
+For the purposes of this tutorial, we will use an ancient Iberian human dental calculus sample 'ECO014.B', originally published in [Fellows Yates et al. (2021, PNAS)](https://doi.org/10.1073/pnas.2021655118), that comes from a Mesolithic site in Valencia.
 This sample was analysed in a study to reconstruct the taxonomic profiles of ancient oral microbiomes of ancient hominins.
 
 From this sample three libraries have been generated and sequenced across three sequencing runs.
@@ -457,7 +457,7 @@ Note that the `gunc` statistics are not currently integrated by the bin summary 
 
 The depth coverage columns of the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) can give you a rough idea of the 'strength' of the presence of that particular bin within the sample.
 
-This column can be used for reporting against the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)), as it can contribute to the 'Assembly quality' section of the 'Genome quality' section.
+This column can be used for reporting against the MIMAG reporting criteria ([Bowers et al. 2017, Nat. Biotech.](http://dx.doi.org/10.1038/nbt.3893)), as it can contribute to the 'Assembly quality' section of the 'Genome quality' section.
 
 #### CheckM
 
@@ -465,9 +465,9 @@ The integration of CheckM within nf-core/mag allows us to estimate Completeness 
 
 > [!NOTE]
 > If it is particularly important for your data to recover genomes from phyla with reduced genome sizes, such as from Patescibacteria, it is strongly recommended to use CheckM2.
-> This is due to this more recent version of CheckM being able to use additional genomic information outside of just universal marker genes ([Chklovski et al. 2023](https://doi.org/10.1038/s41592-023-01940-w)).
+> This is due to this more recent version of CheckM being able to use additional genomic information outside of just universal marker genes ([Chklovski et al. 2023, Nat. Methods](https://doi.org/10.1038/s41592-023-01940-w)).
 
-This column can be used for reporting against the 'Completeness' and 'Contamination' specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)).
+This column can be used for reporting against the 'Completeness' and 'Contamination' specifications of the MIMAG reporting criteria ([Bowers et al. 2017, Nat. Biotech.](http://dx.doi.org/10.1038/nbt.3893)).
 
 | Level                | Completeness score | Contamination Score |
 | -------------------- | ------------------ | ------------------- |
@@ -526,7 +526,7 @@ As before, this can be an initial indicator of good ancient bin, when with combi
 
 Other standard metagenomic \_de novo assembly metrics can be assessed here such as the low number contigs but with a total length reaching that expected of microbial genomes.
 Other metrics include N50 (where the larger number the better - as this represents the longest contig representing at the point you covering 50% of the length of the assembly) and L50 (where the lower the number the better - as this represents the number of contigs you need to reach 50% of the total length assembly).
-All these metrics also fall under the specifications of the MIMAG reporting criteria ([Bowers et al. 2017](http://dx.doi.org/10.1038/nbt.3893)), under the 'Assembly quality' section that expects more contiguous assemblies (fewer numbers of long contigs) for higher quality bins.
+All these metrics also fall under the specifications of the MIMAG reporting criteria ([Bowers et al. 2017, Nat. Biotech.](http://dx.doi.org/10.1038/nbt.3893)), under the 'Assembly quality' section that expects more contiguous assemblies (fewer numbers of long contigs) for higher quality bins.
 
 #### GTDBTk
 
@@ -552,7 +552,7 @@ Therefore nf-core/mag produces these metrics firstly by aligning the input reads
 nf-core/mag then passes the resulting BAM files for each bin to the tool pyDamage, which applies a statistical model to assess the probability that the C to T deamination patterns match the distribution expected of typical ancient DNA molecules.
 
 By default pyDamage produces such metrics on a per-contig basis.
-To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023)](https://doi.org/10.1126/science.adf5300), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
+To summarise this at bin level, it takes the approach of [Klapper, Hübner, Ibrahim et al. (2023, Science)](https://doi.org/10.1126/science.adf5300), where the per-contig statistics are grouped by the presence of the contig in each bin, and then a median value of those values for each metric is made.
 
 These aggregated median values are then displayed in the [`bin_summary.tsv`](data/premade_mag_results/execution-cli/bin_summary.tsv) to allow you to evaluate whether a bin displays sufficiently represented C to T deamination ancient DNA damage patterns.
 
@@ -585,7 +585,7 @@ This can also be roughly evaluated within the pyDamage columns of the [`bin_summ
 This is nicely demonstrated in the table above, where if we compare the library build metadata of the multiple sequencing libraries from the same sample (ECO004) from the with their pyDamage results:
 
 - Bin `MEGAHIT-SemiBin2Refined-ERR3579731.1.fa` (where library `ERR3579731` had no damage treatment applied) has a predicted accuracy of 100 (`1`) and a _q_ value of `0`, and we see a decrease in the frequency of C to T from `0.529`, `0.368`, `0.233` etc.
-- Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elevated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015](https://doi.org/10.1098/rstb.2013.0624))
+- Bin `MEGAHIT-SemiBin2Refined-ERR10114849.3.fa` has a predicted accuracy of `0.993` and \_q_value `0`, sees the presence of elevated C to T values on the first base - something that matches the expected pattern of partial-UDG libraries ([Rohland et al. 2015, Philos. Trans. R. Soc. Lond. B Biol. Sci.](https://doi.org/10.1098/rstb.2013.0624))
 - Bin `MEGAHIT-SemiBin2Refined-ERR3579732.61.fa` has a predicted accuracy of `0.9565` and a _q_ value of `0`, sees essentially 0 elevated frequencies (<0.0009 at its peak), matching the expected entire removal of all deaminated bases with the 'full' UDG treatment
 
 It is important to know that for all of these pyDamage metrics, we should always interpret them in the context of the number of reads (`nb_reads_aligned_pydamagebins`).
@@ -679,7 +679,7 @@ It's important to reiterate that the medium- and lower-quality MAGs should still
 Depending on your use case, lower-quality MAGs may represent sufficiently high quality for certain analyses, and other methods (such as phylogenomic positioning) can indicate an ancient genome in the absence of damage.
 
 In this case, mapping the shallowly sequenced non-UDG (retaining damage) library reads against the deep sequenced full-UDG (damaged removed), may help further identify more bins that in fact are likely ancient.
-Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classification and manual refinement (see [Klapper, Hübner, Ibrahim et al. (2023)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA) for example).
+Furthermore, 'chimeric' bins may be able to be resolved through contig-based taxonomic classification and manual refinement (see [Klapper, Hübner, Ibrahim et al. (2023, Science)](https://app.paperpile.com/my-library/Klapper-et-al-2023-pvb9zRlPiCeG7vlpiPBQaAA) for example).
 
 ## Clean up
 
